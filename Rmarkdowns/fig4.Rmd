@@ -1,0 +1,427 @@
+---
+title: "Figure 4"
+output:
+  html_notebook:
+    toc: yes
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    toc_float: true
+    theme: united  # many options for theme, this one is my favorites.
+    highlight: tango  # specifies the syntax highlighting style
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---
+# Set up
+
+Creating paths and loading in data
+```{r paths}
+HOME <- "." # directory 
+DATA <- paste0(HOME, "/data/") # data folder
+RESULT <- paste0(HOME, "/results/") #result folder
+SCRATCH <- paste0(HOME, "/scratch/") #scratch folder
+FIGURE <- paste0(HOME, "/figures/") #figure folder
+
+# make path to meta data
+INFO <- paste0(DATA, "metadata_all.csv")
+ORDER <- paste0(DATA, "group_order.csv")
+
+# scaffold sizes 
+SCAF <- paste0(DATA, "sorted_scaffolds") # scaffolds file
+```
+
+```{r include=FALSE}
+library(ggpubr)
+library(tidyverse)
+library(fishualize)
+library(patchwork)
+library(ggtree)    # For tree visualization
+```
+
+
+```{r}
+#theme_set(theme_light(base_size = 10))
+theme_set(ggthemes::theme_few(base_size = 10))
+# list species in package
+spp <- fishualize::fish_palettes()
+```
+
+
+
+## Meta data
+
+```{r}
+info <- read.csv(INFO, stringsAsFactors = TRUE, header = TRUE)
+
+order <- read_csv(ORDER) %>% 
+  mutate(across(where(is.character), fct_inorder))
+
+meta <- full_join(order, info, multiple = "all") %>% 
+  filter(species_code %in% c("AC", "AE")) %>% 
+  filter(filtering == "passed")
+
+
+scaffolds <- read_table(SCAF, col_names = c("CHROM", "Length"))
+genome_size <- sum(scaffolds$Length)
+```
+
+
+# PCA
+
+```{r}
+# make path to eigenvector and Axis Percentage
+VAL <- list.files(paste0(SCRATCH, "pca"),pattern = "eigenval$", full.names = TRUE)
+VEC <- list.files(paste0(SCRATCH, "pca"),pattern = "eigenvec$", full.names = TRUE)
+PVE <- list.files(paste0(SCRATCH, "pca"),pattern = "pve$", full.names = TRUE)
+```
+
+
+
+```{r}
+# read in data
+pca <- read_table(VEC[1], col_names = FALSE)
+pve <- scan(PVE[1]) %>% 
+  paste0("%")
+
+# sort out the pca data
+pca_df <- pca %>% 
+  dplyr::select(-X1) %>% 
+  dplyr::rename(sample=X2) %>% 
+  rename_with(~ paste0("PC", seq_along(.)), starts_with("X")) %>% 
+  left_join(meta)
+
+p_pca <- ggplot(pca_df, aes(x=PC1, y=PC2, fill=species)) +
+  geom_point(size=3, alpha=0.7, shape = 21) +
+  labs(x=paste("PC1", pve[1]), y=paste("PC2", pve[2])) +
+  scale_fill_manual(values =  c("#228B22","#DC143C")) +
+  #scale_fill_fish_d(option = spp[132]) +
+  #scale_color_fish_d(option = spp[132]) +
+  #scale_shape_manual(values= rep(21:25,10)) +
+  theme(
+    legend.position = "none",
+    #axis.text = element_text(size = 12),
+    #axis.title = element_text(size = 15),
+    #plot.title = element_text(size = 20),
+    #legend.title = element_text(size = 22)
+  )
+p_pca 
+col <- c("#FFD700","#228B22","#DC143C")
+```
+
+# Admixture
+
+```{r}
+
+
+ADM <- paste0(SCRATCH, "admix") # data folder
+FAM <- paste0(ADM, "/cygnea_exulcerata_ld.fam")
+FAM_AC <- paste0(ADM, "/cygnea_mac5_ld.fam")
+
+
+# make a list of sample names in the right order
+ind <- read_table(FAM, col_names = FALSE) %>% 
+  mutate(sample = X1) %>% 
+  dplyr::select(sample)
+```
+
+
+```{r}
+adm_all <- "cygnea_exulcerata"
+
+meta_all <- ind %>% 
+  left_join(meta) %>%
+  droplevels()
+```
+
+
+
+
+```{r message=FALSE, warning=FALSE}
+#make empty tibble
+adm_temp <- tibble(sample=character(),
+                   k=numeric(),
+                   Q=character(),
+                   value=numeric())
+
+
+nk <- length(list.files(ADM, pattern = paste0("^",adm_all,".*Q$")))
+
+for (k in 1:nk){
+  data <- read_table(list.files(ADM, pattern = paste0("^",adm_all,".*", k,"[.]Q$"), full.names = TRUE), col_names = paste0("Q",seq(1:k)))
+  data$sample <- meta_all$sample
+  data$k <- k
+  #This step converts from wide to long.
+  data %>% pivot_longer(names_to = "Q", values_to = "value", -c(sample,k)) -> data
+  adm_temp <- rbind(adm_temp,data)
+}
+
+adm_all_df <- adm_temp %>% 
+  left_join(meta_all, by = "sample") %>% 
+  mutate(sample = factor(sample)) %>% 
+  mutate(Q=factor(Q))
+```
+
+
+
+```{r}
+# colours from
+# fish(6, option= spp[132])
+adm_all_df %>% 
+  mutate(sample_order = paste0(sample, order))
+
+p_adm <- adm_all_df %>% 
+  filter(k==2) %>% 
+  arrange(Q,value) %>%
+  mutate(sample_order = fct_inorder(sample)) %>% 
+   ggplot(aes(x=sample_order, y=value, fill=Q)) +
+    geom_bar(stat = "identity", position = "fill", width = 1) +
+    facet_grid(. ~ species, switch = "x", scales = "free_x", space = "free") +
+    theme_minimal() + 
+    scale_fill_manual(values = c("#DC143C","#228B22")) +
+    #scale_y_continuous(expand = c(0, 0)) +
+    #scale_x_discrete(expand = expansion(add = 1)) +
+  labs(y = "Ancestry", x="Individuals") +
+    theme(
+      panel.spacing.x = unit(0.1, "lines"),
+      axis.text.x = element_blank(),
+      panel.grid = element_blank(),
+      strip.text.x = element_blank(),
+      legend.position = "none",
+      strip.text = element_blank(),
+      strip.background = element_blank())
+      #axis.text.y = element_blank())
+
+
+p_adm 
+
+
+```
+
+# ML Tree
+
+
+```{r}
+ML_TREE <- paste0(SCRATCH, "raxml/T3.raxml.bestTree")
+
+ml_tree <- read.tree(ML_TREE)
+
+
+# Ensure the sample IDs match the tree tip labels
+meta_info <- meta %>% 
+  mutate(label = as.character(sample)) %>% 
+  filter(label %in% ml_tree$tip.label) %>% 
+  dplyr::select(label, everything()) 
+
+# Verify metadata and tree labels match
+all(ml_tree$tip.label %in% meta_info$label)
+# If FALSE, check for inconsistencies (e.g., typos or missing data)
+```
+
+
+```{r}
+# Choose a tip from Anodonta exulcerata
+outgroup_tip <- meta_info %>% 
+  filter(species == "Anodonta exulcerata") %>% 
+  pull(label) %>% 
+  first()  # Take the first one
+outgroup_tip <- "AC94"
+
+# Reroot the tree
+ml_tree2 <- ape::root(ml_tree, outgroup = outgroup_tip, resolve.root = TRUE)
+
+# Re-plot the tree
+p_tree2 <- ggtree(ml_tree2) %<+% meta_info +  
+  scale_colour_manual(values =  c("#228B22","#DC143C")) +
+  geom_tippoint(aes(color=species)) +
+  theme_tree2() +
+  theme(legend.title = element_blank(), 
+        legend.position = "top")
+p_tree2
+
+
+```
+
+```{r}
+# Add metadata to the tree for visualization
+p_tree <- ggtree(ml_tree) %<+% meta_info +  # `%<+%` adds metadata to ggtree
+  scale_colour_manual(values =  c("#228B22","#DC143C")) +
+  geom_tippoint(aes(color=species)) +  # Replace 'species' with desired grouping +
+  theme_tree2() +
+  theme(legend.title = element_blank(), 
+        legend.position = "top",
+        legend.text = element_text(size = 12, face = "italic"))+
+  guides(color = guide_legend(override.aes = list(size = 3))) 
+
+p_tree
+```
+
+
+
+
+
+# Heterozygosity & FIS
+
+```{r, fig.width=10, fig.height=10}
+# heterozygosity
+HET_POP <- paste0(SCRATCH, "het/cygnea_exulcerata_pop_het.txt")
+
+
+ind_het_pop <- read_table(HET_POP) %>% 
+  filter(`O(HOM)` != 0)
+
+
+df_het <- ind_het_pop %>% 
+  left_join(meta) %>% 
+  mutate(Ho = (1-(`O(HOM)`)/N_SITES)) %>% 
+  mutate(He = (1-(`E(HOM)`)/N_SITES)) %>% 
+  mutate(Fis = (He-Ho)/He) %>% 
+  mutate(Ho_norm = (Ho*N_SITES/genome_size)) %>% # corrected for genome size 
+  mutate(He_norm = (He*N_SITES/genome_size)) %>% 
+  mutate(F_norm = (He_norm-Ho_norm)/He_norm) %>% 
+  left_join(select(p_adm$data, sample, sample_order))
+```
+
+
+```{r}
+p_ho <- df_het %>% 
+  ggplot(aes(x=Ho_norm, fill=species)) +
+  geom_histogram(col = "white") +
+  scale_fill_manual(values = c("#228B22","#DC143C")) +
+  labs( y = "Ho", x="Individuals") +
+  theme(
+    legend.position = "none")
+
+
+p_ho
+
+
+
+
+p_ho <- df_het %>%
+  ggplot(aes(x = sample_order, y = Ho_norm, color = species, group = species)) + 
+  geom_line() +  # Line plot for each species
+  geom_point() +  # Add points for clarity
+  scale_color_manual(values = c("#228B22", "#DC143C")) + 
+  labs( y = "Ho", x="Individuals") +
+  theme(
+    legend.position = "none",
+    axis.ticks.x = element_blank(),
+    axis.text.x = element_blank())
+
+p_ho
+```
+
+# Pi
+
+```{r}
+# nucleotide diversity
+PI <- paste0(SCRATCH, "pi/cygnea_exulcerata_pi_10kb.txt")
+# split pop into species code and into pop code
+pi_df <- read_table(PI) %>% 
+  group_by(pop) %>% 
+  mutate(species_code = str_split(pop, "_" , simplify = TRUE)[,1],
+         pop_code = str_split(pop, "_" , simplify = TRUE)[,2],
+         position=paste0(CHROM, BIN_START)) %>% 
+  left_join(order) %>% 
+  mutate(species = case_when(
+    species_code == "AC" ~ "Anodonta cygnea",
+    species_code == "AE" ~ "Anodonta exulcerata",
+    TRUE ~ NA_character_  # Assign NA if no match
+  ))
+
+```
+
+```{r}
+# summary
+pi_sum <- pi_df %>% 
+  group_by(species, catchment, location) %>% 
+  summarise(mean_PI = mean(PI, na.rm = TRUE),
+    sd_PI = sd(PI, na.rm = TRUE),
+    se_PI = sd(PI, na.rm = TRUE) / sqrt(sum(!is.na(PI))),
+    n_sites=sum(N_VARIANTS))
+
+```
+
+```{r}
+p_pi <- pi_sum %>% 
+  ggplot(aes(y=mean_PI,x=species, fill=location, col = location)) +
+  geom_col(position = position_dodge(), alpha = 0.3) +  # Bar for the mean
+  scale_fill_fish_d(option = spp[132]) +
+  scale_color_fish_d(option = spp[132]) +
+  labs(y = "Pi") +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank())
+
+p_pi
+```
+
+```{r, fig.width=10, fig.height=10}
+pi_df %>% 
+  ggplot(aes(y=PI ,x=species, fill=species, col = species)) +
+  geom_boxplot(alpha=0.3) +
+  scale_fill_manual(values = c("#228B22","#DC143C")) +
+  labs(y = "Pi") +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_blank()
+  )+
+  guides(fill = guide_legend(nrow = 4))
+```
+
+
+```{r}
+ggplot(pi_df, aes(x = species, y = PI, fill = species)) +
+  geom_violin(trim = FALSE, alpha = 0.5) +
+  geom_boxplot(width = 0.2, outlier.shape = NA) + 
+  scale_fill_manual(values = c("#228B22","#DC143C")) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank())
+```
+
+
+```{r}
+pi_sum_chrom <- pi_df %>% group_by(species, CHROM) %>% 
+  summarise(PI = mean(PI, na.rm = TRUE))
+
+p_pi <- ggplot(pi_sum_chrom, aes(x = CHROM, y = PI, color = species)) +
+  geom_point(alpha = 0.7) +
+  labs(y="Pi", x = "Scaffolds") +
+  scale_colour_manual(values = c("#228B22","#DC143C")) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_blank())
+```
+
+
+# Figure 4 ploting
+
+```{r}
+layout <- c(
+    patchwork::area(t=1,l=1,b=2, r=1),
+    patchwork::area(t=1,l=2,b=2, r=2),
+    patchwork::area(t = 3, l = 1, b = 3, r = 2),
+    patchwork::area(t =4, l = 1, b = 4, r = 2)
+)
+
+
+guide_area() + p_tree + p_pca + p_adm + p_ho + p_pi +
+  plot_layout(guides = "collect", design = layout)
+
+```
+
+```{r}
+p_tree + (p_pca / p_ho /  p_adm / p_pi)
+
+ggsave(paste0(FIGURE, "fig4.png"),
+       width = 8, height = 9, units = "in", dpi = 300) 
+
+ggsave(paste0(FIGURE, "fig4.svg"),
+       width = 8, height = 9, units = "in", dpi = 300) 
+
+ggsave(paste0(FIGURE, "fig4.pdf"),
+       width = 8, height = 9, units = "in", dpi = 300) 
+```
+
+

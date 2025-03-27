@@ -1,0 +1,769 @@
+---
+title: "Figure 5"
+output:
+  html_notebook:
+    toc: yes
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    toc_float: true
+    theme: united  # many options for theme, this one is my favorites.
+    highlight: tango  # specifies the syntax highlighting style
+    code_folding: hide
+editor_options: 
+  chunk_output_type: inline
+---
+# Set up
+
+Creating paths and loading in data
+```{r paths}
+HOME <- "." # directory 
+DATA <- paste0(HOME, "/data/") # data folder
+RESULT <- paste0(HOME, "/results/") #result folder
+SCRATCH <- paste0(HOME, "/scratch/") #scratch folder
+FIGURE <- paste0(HOME, "/figures/") #figure folder
+
+# make path to meta data
+INFO <- paste0(DATA, "metadata_all.csv")
+ORDER <- paste0(DATA, "group_order.csv")
+
+# scaffold sizes 
+SCAF <- paste0(DATA, "sorted_scaffolds") # scaffolds file
+```
+
+```{r include=FALSE}
+library(ggpubr)
+library(tidyverse)
+library(fishualize)
+library(patchwork)
+library(ggtree)    # For tree visualization
+library(sf)
+library(ggspatial)
+```
+
+
+```{r}
+#theme_set(theme_light(base_size = 10))
+theme_set(ggthemes::theme_few(base_size = 10))
+# list species in package
+spp <- fishualize::fish_palettes()
+```
+
+
+
+## Meta data
+
+```{r}
+info <- read.csv(INFO, stringsAsFactors = TRUE, header = TRUE)
+
+order <- read_csv(ORDER) %>% 
+  mutate(across(where(is.character), fct_inorder))
+
+meta <- full_join(order, info, multiple = "all") %>% 
+  filter(species_code %in% c("AC")) %>% 
+  filter(filtering == "passed") %>% 
+  arrange(species,order) %>% 
+  mutate(species_order=fct_inorder(paste0(species_code, "_", pop_code))) %>% 
+  filter(sample != "AC83", sample != "AC90") %>% #remove hybrids
+  droplevels()
+
+
+scaffolds <- read_table(SCAF, col_names = c("CHROM", "Length"))
+genome_size <- sum(scaffolds$Length)
+```
+
+
+```{r}
+# the number of locations
+n_locations <- length(levels(order$location))
+# their shape in figures
+shp_locations <- rep(21:25,10)[1:n_locations]
+# their colour in figures
+col_locations <- fish(n_locations, option = spp[132])
+
+# make tibble for colours and shapes
+col_shp <- tibble(location=levels(order$location), shp_loc=shp_locations, col_loc=col_locations) %>% 
+  filter(location %in% meta$location) %>% 
+  left_join(meta %>% count(location))
+
+col_shp_1 <- col_shp %>% 
+  filter(n > 1)
+
+col_shp_5 <- col_shp %>% 
+  filter(n >= 5)
+
+col_shp_10 <- col_shp %>% 
+  filter(n >= 10)
+```
+
+```{r}
+meta_sum_all <- meta %>%  
+  group_by(canton, catchment, location, pop_code, x_coord, y_coord) %>% 
+  summarise(AA=sum(species=="Anodonta anatina"),AC=sum(species=="Anodonta cygnea"), AE=sum(species=="Anodonta exulcerata")) %>% 
+  droplevels() %>% 
+  mutate(total = AA+AC+AE)
+```
+
+
+# Map
+
+
+## Load data
+```{r}
+data1 <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Gesamtfläche_gf/K4_polg20230101_gf/K4polg20230101gf_ch2007Poly.shp")
+data2 <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Gesamtfläche_gf/K4_bezk20220101_gf/K4bezk20220101gf_ch2007Poly.shp")
+
+# Swiss natiaonl border
+swiss_geo <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Gesamtfläche_gf/K4_suis18480101_gf/K4suis18480101gf_ch2007Poly.shp")
+
+# Kantons
+kanton_geo <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Gesamtfläche_gf/K4_kant20220101_gf/K4kant20220101gf_ch2007Poly.shp")
+
+# Municipalities
+#municipality_geo <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Vegetationsfl„che_vf/K4_polg20210101_vf/K4polg20210101vf_ch2007Poly.shp")
+municipality_geo <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Vegetationsfläche_vf/K4_polg20230101_vf/K4polg20230101vf_ch2007Poly.shp") 
+
+# Lakes and rivers
+lake1_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_seenyyyymmdd/k4seenyyyymmdd11_ch2007Poly.shp") # lakes- category 1 (i.e. > 500 ha)
+lake2_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_seenyyyymmdd/k4seenyyyymmdd22_ch2007Poly.shp") # lakes- category 2 (i.e. > 195-499 ha)
+
+# Compile the data into one table and transform
+lake_geo <- rbind(lake1_geo,lake2_geo)
+
+#river basins
+river_basin <- read_sf("data/MapData/river_basin/a0301_flussv1_0.shp")
+
+river1_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd11_ch2007.shp")
+river2_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd22_ch2007.shp")
+river3_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd33_ch2007.shp")
+river4_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd44_ch2007.shp")
+river5_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd55_ch2007.shp")
+
+# Compile the data into one table
+river_geo <- rbind(river1_geo,river2_geo,river3_geo,river4_geo,river5_geo) 
+```
+
+
+## Base map
+
+```{r}
+
+# Rhine, Aare, Resu and Limat visable
+basin_col <- c("#490961FF","#161613FF","#82BBAAFF","#4091D5FF","#E46D00FF","#BFAD7AFF","#B24531FF","grey","grey")
+
+# Clip layers to the Swiss border
+river_basin_clipped <- st_intersection(river_basin, swiss_geo)
+
+map_ch <- ggplot() +
+  #geom_stars(data = relief, inherit.aes = FALSE, aes(alpha = value)) +
+  #geom_raster(data = relief, inherit.aes = FALSE,aes(x = x, y = y, alpha = value)) +
+  geom_sf(data = river_basin_clipped, fill = alpha(basin_col, 0.5) , col = "transparent") +
+  #geom_sf(data = kanton_geo, fill = "transparent", size = 1.5, col ="black") +
+  geom_sf(data = lake_geo, fill = "lightblue") +
+  geom_sf(data = river_geo, colour = "lightblue") +
+  geom_sf(data = swiss_geo, fill = "transparent", col ="black") +
+  #labs(title = "Sampling map", x = "x_coorditude", y = "t_coorditude")
+  coord_sf() +
+  annotation_scale(location = "br", width_hint = 0.2, height = unit(0.15, "cm"), pad_y = unit(0.6, "in")) +
+  annotation_north_arrow(location = "br", which_north = "true", pad_x = unit(0.2, "in"), pad_y = unit(0.7, "in"), style = north_arrow_fancy_orienteering, width = unit(1, "cm"), height = unit(1, "cm")) +
+  theme_void() 
+
+
+```
+
+```{r, fig.width=10, fig.height=10}
+p_map <- map_ch +
+  geom_point(data = meta_sum_all, mapping = aes(x = x_coord, y = y_coord, fill = location, shape = location), alpha =0.7, size=3) + 
+  scale_size_continuous(breaks = scales::breaks_width(1)) +
+  labs(fill = "Location", shape = "Location") +
+  scale_shape_manual(values= col_shp$shp_loc) +
+  scale_fill_manual(values= col_shp$col_loc) +
+  theme(legend.position = c(0.5, -0.05),
+        legend.title = element_blank(),
+        legend.key.spacing = unit(0, "cm"))+
+        #legend.margin = margin(0, 0, 0, 0))+
+  guides(fill = guide_legend(ncol = 7), shape = guide_legend(ncol = 7))
+
+
+p_map
+```
+
+# PCA
+
+```{r}
+# make path to eigenvector and Axis Percentage
+VAL <- list.files(paste0(SCRATCH, "pca"),pattern = "eigenval$", full.names = TRUE)
+VEC <- list.files(paste0(SCRATCH, "pca"),pattern = "eigenvec$", full.names = TRUE)
+PVE <- list.files(paste0(SCRATCH, "pca"),pattern = "pve$", full.names = TRUE)
+```
+
+
+
+```{r}
+# read in data
+pca <- read_table(VEC[3], col_names = FALSE)
+pve <- scan(PVE[3]) %>% 
+  paste0("%")
+
+# sort out the pca data
+pca_df <- pca %>% 
+  dplyr::select(-X1) %>% 
+  dplyr::rename(sample=X2) %>% 
+  rename_with(~ paste0("PC", seq_along(.)), starts_with("X")) %>% 
+  left_join(meta)
+
+pca1_2 <- ggplot(pca_df, aes(x=PC1, y=PC2, fill=location, shape = location)) +
+  geom_point(size=3, alpha=0.7) +
+  labs(x=paste("PC1,", pve[1]), y=paste("PC2,", pve[2])) +
+  scale_shape_manual(values= col_shp$shp_loc) +
+  scale_fill_manual(values= col_shp$col_loc) +
+  theme(
+    legend.position = "none",
+    #legend.title = element_blank()
+    #axis.text = element_text(size = 12),
+    #axis.title = element_text(size = 15),
+    #plot.title = element_text(size = 20),
+    #legend.title = element_text(size = 22)
+  )
+pca3_4 <- pca1_2 + aes(x=PC3, y=PC4) +
+  labs(x=paste("PC3,", pve[3]), y=paste("PC4,", pve[4]))
+pca1_2
+pca3_4 
+```
+
+# Admixture
+
+```{r}
+
+
+ADM <- paste0(SCRATCH, "admix") # data folder
+FAM <- paste0(ADM, "/cygnea_exulcerata_ld.fam")
+FAM_AC <- paste0(ADM, "/cygnea_mac5_ld.fam")
+
+
+# make a list of sample names in the right order
+ind <- read_table(FAM, col_names = FALSE) %>% 
+  mutate(sample = X1) %>% 
+  dplyr::select(sample)
+```
+
+
+```{r}
+adm_cygnea <- "cygnea_mac5_ld"
+
+# make a list of sample names in the right order
+ind <- read_table(FAM_AC, col_names = FALSE) %>% 
+  mutate(sample = X1) %>% 
+  dplyr::select(sample)
+
+meta_cygnea <- ind %>% 
+  left_join(meta) %>%
+  filter(species_code == "AC") %>% 
+  droplevels()
+```
+
+
+
+
+```{r message=FALSE, warning=FALSE}
+#make empty tibble
+adm_temp <- tibble(sample=character(),
+                   k=numeric(),
+                   Q=character(),
+                   value=numeric())
+
+
+
+nk <- length(list.files(ADM, pattern = paste0("^",adm_cygnea,".*Q$")))
+
+for (k in 1:nk){
+  data <- read_table(list.files(ADM, pattern = paste0("^",adm_cygnea,".*", k,"[.]Q$"), full.names = TRUE), col_names = paste0("Q",seq(1:k)))
+  data$sample <- meta_cygnea$sample
+  data$k <- k
+  #This step converts from wide to long.
+  data %>% pivot_longer(names_to = "Q", values_to = "value", -c(sample,k)) -> data
+  adm_temp <- rbind(adm_temp,data)
+}
+
+adm_cygnea_df <- adm_temp %>% 
+  left_join(meta_cygnea, by = "sample") %>% 
+  mutate(sample = factor(sample)) %>% 
+  mutate(Q=factor(Q))
+```
+
+
+
+```{r}
+# colours from
+# fish(6, option= spp[132])
+adm_cygnea_df %>% 
+  mutate(sample_order = paste0(sample, order))
+fish(8, option= spp[132])
+
+p_adm <- adm_cygnea_df %>% 
+  filter(k == 7) %>%
+   ggplot(aes(x=sample, y=value, fill=Q)) +
+    geom_bar(stat = "identity", position = "fill", width = 1) +
+    facet_grid(. ~ location, switch = "x", scales = "free_x", space = "free") +
+    theme_minimal() + 
+    scale_fill_manual(values = c("#00AAE3FF","#79B6B7FF","#161613FF", "#D5A459FF","#EA7900FF", "#554977FF","#3D81C4FF" )) +
+    #scale_y_continuous(expand = c(0, 0)) +
+    #scale_x_discrete(expand = expansion(add = 1)) +
+  labs(y = "Ancestry") +
+    theme(
+      panel.spacing.x = unit(0.1, "lines"),
+      axis.text.x = element_blank(),
+      panel.grid = element_blank(),
+      #strip.text.x = element_text(angle=90, hjust = 1),
+      strip.text.x = element_blank(),
+      axis.title.x = element_blank(),
+      legend.position = "none")
+      #text = element_text(size = 14, colour = "black"),
+      #axis.text.y = element_blank())
+
+
+```
+
+
+# FIS & Het
+
+```{r, fig.width=10, fig.height=10}
+# heterozygosity
+HET_POP <- paste0(SCRATCH, "het/cygnea_exulcerata_pop_het.txt")
+
+ind_het_pop <- read_table(HET_POP) %>% 
+  filter(`O(HOM)` != 0)
+
+
+df_het <- ind_het_pop %>% 
+  left_join(meta) %>% 
+  mutate(Ho = (1-(`O(HOM)`)/N_SITES)) %>% 
+  mutate(He = (1-(`E(HOM)`)/N_SITES)) %>% 
+  mutate(Fis = (He-Ho)/He) %>% 
+  mutate(Ho_norm = (Ho*N_SITES/genome_size)) %>% # corrected for genome size 
+  mutate(He_norm = (He*N_SITES/genome_size)) %>% 
+  mutate(F_norm = (He_norm-Ho_norm)/He_norm)%>% 
+  filter(species_code %in% c("AC")) %>% 
+  filter(catchment != "Ticino") %>% 
+  full_join(tibble(catchment = factor("Ticino"))) %>% 
+  droplevels()
+```
+
+```{r}
+p_ho <- df_het %>% 
+  ggplot(aes(y=Ho_norm ,x=catchment, fill=location, col = location)) +
+  geom_boxplot(alpha=0.3) +
+  scale_fill_manual(values= col_shp_1$col_loc) +
+  scale_colour_manual(values= col_shp_1$col_loc) +
+  labs( y = "Ho") +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank())
+
+p_fis <- df_het %>% 
+  add_count(location) %>% 
+  filter(n >= 5) %>% 
+  full_join(tibble(catchment = factor("Ticino"))) %>% 
+  droplevels() %>% 
+  ggplot(aes(y=F_norm ,x=catchment, fill=location, col = location)) +
+  geom_boxplot(alpha=0.3) +
+  scale_fill_manual(values= col_shp_5$col_loc) +
+  scale_colour_manual(values= col_shp_5$col_loc) +
+  labs( y = "FIS") +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank())
+
+p_ho
+
+p_fis
+```
+
+# Pi
+
+```{r}
+# nucleotide diversity
+PI <- paste0(SCRATCH, "pi/cygnea_exulcerata_pi_10kb.txt")
+# split pop into species code and into pop code
+pi_df <- read_table(PI) %>% 
+  group_by(pop) %>% 
+  mutate(species_code = str_split(pop, "_" , simplify = TRUE)[,1],
+         pop_code = str_split(pop, "_" , simplify = TRUE)[,2]) %>% 
+  left_join(order) %>% 
+  filter(species_code %in% c("AC")) 
+
+```
+
+```{r}
+# summary
+pi_sum <- pi_df %>% 
+  group_by(catchment, location) %>% 
+  summarise(mean_PI = mean(PI, na.rm = TRUE),
+    sd_PI = sd(PI, na.rm = TRUE),
+    se_PI = sd(PI, na.rm = TRUE) / sqrt(sum(!is.na(PI))),
+    n_sites=sum(N_VARIANTS)) %>% 
+    full_join(tibble(catchment = factor("Ticino"))) %>% 
+  droplevels()
+
+```
+
+```{r}
+p_pi <- pi_sum %>% 
+  ggplot(aes(y=mean_PI,x=catchment, fill=location, shape = location)) +
+  geom_point(position = position_dodge(width = 0.5), size = 3) +  # Bar for the mean
+  scale_shape_manual(values= col_shp_5$shp_loc) +
+  scale_fill_manual(values= col_shp_5$col_loc) +
+  labs(y = "Pi") +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank())
+
+p_pi
+```
+
+
+
+# FRoH
+
+
+
+```{r}
+ROH_AC<- paste0(SCRATCH, "roh/cygnea_mac5.vcf_roh.txt")
+
+roh_ind <- read_table(ROH_AC, skip=4, col_names = c("RG", "Sample", "CHROM", "Start", "End", "Length", "SNPs", "Quality")) %>% 
+  group_by(Sample) %>% 
+  mutate(mb = Length/1e6) %>% 
+  summarise(MB = sum(mb), 
+            MB_0.3 = sum(mb[mb>0.3]), 
+            MB_1 = sum(mb[mb>1]),
+            NROH = n()) %>% 
+  # mutate(FRoH=MB/L_tot, FRoH_0.3=MB_0.3/L_tot) %>% 
+  left_join(meta, by = join_by(Sample == sample))
+
+
+scaffolds <- read_table(SCAF, col_names = c("CHROM", "Length"))
+genome_size <- scaffolds %>% 
+  group_by(CHROM) %>%
+  summarise(chrom_size = sum(Length)/1e6) %>% 
+  ungroup() %>%
+  summarise(all = sum(chrom_size),
+         above_0.3 = sum(chrom_size[chrom_size>0.3]),
+         above_1 = sum(chrom_size[chrom_size>1]))
+
+froh_df <- roh_ind %>% 
+  mutate(FRoH=MB/genome_size$all, FRoH_0.3=MB_0.3/genome_size$above_0.3, FRoH_1=MB_1/genome_size$above_1)
+```
+
+```{r}
+
+p_froh03 <- froh_df %>% 
+  ggplot(aes(y=FRoH_0.3,x=catchment, fill=location, col = location)) +
+  geom_boxplot(alpha=0.3) +
+  #geom_point() +
+  scale_fill_manual(values= col_shp$col_loc) +
+  scale_colour_manual(values= col_shp$col_loc) +
+  labs(y = "FRoH") +
+  #scale_y_discrete(limits=rev)  +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank())
+
+
+```
+
+# Ne
+
+```{r}
+NE <- paste0(SCRATCH, "ne/ne.txt")
+
+# load data and split pop column into species code and pop code
+ne_df <- read_table(NE) %>%
+  separate(pop, c("species_code", "pop_code"), sep = "_") %>% 
+  left_join(order) %>% 
+  filter(species_code %in% c("AC")) %>% 
+  full_join(tibble(catchment = c("Rhein","Limmat","Ticino"))) %>%
+  mutate(catchment = fct_relevel(catchment, "Rhein", "Limmat", "Reuss", "Aare", "Rhone", "Ticino"))
+```
+
+```{r}
+p_ne <- ne_df %>%
+  ggplot(aes(y=ne,x=catchment, fill=location, col = location, shape = location)) +
+  geom_errorbar(aes(ymin = ci_dw, ymax = ci_up), width = 0.2, position = position_dodge(width = 0.5)) +
+  geom_point(position = position_dodge(width = 0.5), size = 3, col = "black") +
+  scale_fill_manual(values= col_shp_10$col_loc) +
+  scale_colour_manual(values= col_shp_10$col_loc) +
+  scale_shape_manual(values= col_shp_10$shp_loc) +
+  labs(y = "Ne", x ="Catchment") +
+  theme(
+    legend.position = "none",
+    legend.title = element_blank()
+  )+
+  guides(fill = guide_legend(nrow = 4))
+
+p_ne
+```
+
+# Figure 5 ploting
+
+```{r}
+pca_p <- pca1_2 + pca3_4
+
+
+layout <- c(
+    patchwork::area(t=1,l=1,b=5, r = 5),
+    patchwork::area(t=6,l=2,b=7, r = 5),
+    patchwork::area(t =8, l = 1, b = 8, r = 5),
+    patchwork::area(t = 9, l = 1, b = 9, r = 5),
+    patchwork::area(t =10, l = 1, b = 10, r = 5),
+    patchwork::area(t =11, l = 1, b = 11, r = 5),
+    patchwork::area(t =12, l = 1, b = 12, r = 5),
+    patchwork::area(t = 13, l = 1, b = 13, r = 5)
+    )
+
+p_map + pca_p + p_adm + p_ho + p_pi + p_fis + p_froh03 + p_ne +
+  plot_layout(design = layout) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+  
+
+# just smaller than a4 = 8*11 inches or 190*277 mm
+
+
+ggsave(paste0(FIGURE, "fig5.png"),
+       width = 7, height = 11, units = "in", dpi = 300) 
+ggsave(paste0(FIGURE, "fig5.svg"),
+       width = 7, height = 11, units = "in", dpi = 300) 
+ggsave(paste0(FIGURE, "fig5.pdf"),
+       width = 7, height = 11, units = "in", dpi = 300) 
+
+```
+
+
+# Water body - Supp
+
+```{r}
+het_sum <- df_het %>%
+  group_by(catchment,location, wb_size) %>%
+  summarise(mean_Ho = mean(Ho_norm, na.rm = TRUE),
+            mean_He = mean(He_norm),
+            mean_FIS = mean(F_norm),
+            n=n()) %>% 
+  mutate(log_wb_size = log10(wb_size)) %>% 
+  mutate(mean_FIS = if_else(n < 5, NA_real_, mean_FIS))
+
+pi_sum
+
+froh_sum <- froh_df %>% 
+  group_by(catchment, location, wb_size) %>% 
+  summarise(mean_FRoH = mean(FRoH), 
+            mean_FRoH_0.3 = mean(FRoH_0.3), 
+            mean_FRoH_1 = mean(FRoH_1)) %>%
+  mutate(log_wb_size = log10(wb_size))
+
+df_summary <- full_join(het_sum, pi_sum) %>% 
+  full_join(froh_sum) %>% 
+  full_join(ne_df) %>% 
+  filter(wb_size!=0)
+```
+
+
+```{r}
+# Check normality
+shapiro.test(na.omit(df_summary$mean_Ho))# not normal
+shapiro.test(na.omit(df_summary$mean_He))# not normal
+shapiro.test(na.omit(df_summary$mean_FIS)) # normal
+shapiro.test(na.omit(df_summary$mean_PI))
+shapiro.test(na.omit(df_summary$mean_FRoH_0.3)) # not normal
+shapiro.test(na.omit(df_summary$ne)) # not normal
+shapiro.test(na.omit(df_summary$log_wb_size))
+
+# Choose appropriate correlation test
+#cor.test(df_summary$mean_Ho, df_summary$log_wb_size, method = "spearman")  # if not normal
+#cor_result <- cor.test(df_summary$mean_Ho, df_summary$log_wb_size, method = "pearson")   # if normal
+```
+
+
+
+```{r, fig.width=10, fig.height=10}
+p_wb_ho <- ggplot(df_summary, aes(x = log_wb_size, y = mean_Ho)) +
+  labs(y = "Ho") +    
+  geom_smooth(method = "lm", color = "black", se = TRUE) +
+  geom_point(size = 3,aes(colour = location)) +
+  stat_cor(method = "spearman") +  
+  scale_colour_manual(values= col_shp$col_loc) +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank())
+
+p_wb_fis <- ggplot(df_summary, aes(x = log_wb_size, y = mean_FIS)) +
+  labs(y = "FIS") +
+  geom_smooth(method = "lm", color = "black", se = TRUE) +
+  geom_point(size = 3,aes(colour = location)) +
+  stat_cor(method = "pearson") +  
+  scale_colour_manual(values= col_shp$col_loc) +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank())
+
+p_wb_pi <- ggplot(df_summary, aes(x = log_wb_size, y = mean_PI)) +
+  labs(y = "PI") +
+  geom_smooth(method = "lm", color = "black", se = TRUE) +
+  geom_point(size = 3,aes(colour = location)) +
+  stat_cor(method = "pearson") +  
+  scale_colour_manual(values= col_shp$col_loc) +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank())
+
+p_wb_froh <- ggplot(df_summary, aes(x = log_wb_size, y = mean_FRoH_0.3)) +
+  labs( y = "FRoH") +
+  geom_smooth(method = "lm", color = "black", se = TRUE) +
+  geom_point(size = 3,aes(colour = location)) +
+  stat_cor(method = "spearman") +  
+  scale_colour_manual(values= col_shp$col_loc) +
+  theme(
+    legend.position = "none",
+    axis.title.x = element_blank())
+
+p_wb_ne <- ggplot(df_summary, aes(x = log_wb_size, y = ne)) +
+  labs(x = "Log Waterbody Size", y = "Ne") +
+  geom_smooth(method = "lm", color = "black", se = TRUE) +
+  geom_point(size = 3, aes(colour = location)) +
+  stat_cor(method = "spearman") +  
+  scale_colour_manual(values= col_shp$col_loc) +
+  theme(legend.position = "none")
+
+p_wb_ho / p_wb_fis / p_wb_pi / p_wb_froh / p_wb_ne
+```
+
+
+# Prep for fig 6
+
+
+```{r}
+KING_AC <- paste0(SCRATCH, "kinship/cygnea_mac5_ld.king")
+KING_ID_AC <- paste0(SCRATCH, "kinship/cygnea_mac5_ld.king.id")
+
+#reading in the data
+ac_col_id <- read_table(KING_ID_AC)$IID
+ac_king_mat <- read_table(KING_AC, col_names = ac_col_id)
+
+# merging matrix and sample codes
+ac_king_df <- ac_king_mat %>% 
+  mutate(IID1=ac_col_id) %>% 
+  gather(IID2, KINSHIP, -IID1) %>% 
+  left_join(select(meta, "location", "sample"), by = c("IID1" = "sample")) %>% 
+  left_join(select(meta, "location", "sample"), by = c("IID2" = "sample")) %>% 
+  filter(location.x == location.y) %>% 
+  filter(IID1 != IID2) %>% 
+  mutate(KIN = ifelse(KINSHIP < 0, 0, KINSHIP),
+         location = location.x) %>% 
+  group_by(location) %>% 
+  summarise(KIN_mean = mean(KIN),
+            KINSHIP_mean = mean(KINSHIP))
+```
+
+## FST
+```{r}
+# renaming the columns
+code_df <- meta %>% 
+  group_by(species_code, pop_code) %>%
+  arrange(species_code) %>% 
+  mutate(full_code= fct_inorder(paste(species_code, catchment, pop_code, sep = "_")), 
+         code= fct_inorder(paste(species_code, pop_code, sep = "_")),
+         n=n()) %>% 
+  filter(n >= 5) %>%
+  dplyr::select(code, full_code, species, catchment, location) %>% 
+  unique()
+
+
+FST_LD <- paste0(SCRATCH, "fst/cygnea_exulcerata_ld_pop5.fst.summary")
+
+#reading in the data
+fst_data_ld <- read_table(FST_LD) %>% 
+  mutate(across(where(is.character), fct)) %>% 
+  rename(POP1=`#POP1`) %>% 
+  drop_na() %>%
+  pivot_longer(cols = c(POP1, POP2), names_to = "POP_type", values_to = "POP") %>%
+  separate(POP, into = c("species_code", "pop_code"), sep = "_") %>%
+  select(species_code, pop_code, HUDSON_FST) %>% 
+  left_join(code_df) %>% 
+  filter(species == "Anodonta cygnea")
+
+fst_sum <- 
+  fst_data_ld %>% 
+  group_by(location) %>% 
+  summarise(FST_mean = mean(HUDSON_FST))
+```
+
+
+
+```{r}
+ac_summary <- df_summary %>% 
+  left_join(ac_king_df) %>% 
+  left_join(fst_sum) %>% 
+  mutate(species = "Anodonta cygnea")
+
+save(ac_summary, file=paste0(SCRATCH, "ac_summary.rda"))
+```
+
+
+```{r}
+load(paste0(SCRATCH, "aa_summary.rda"))
+
+full_summary <- full_join(ac_summary, aa_summary)
+
+
+```
+
+## fig 6
+
+```{r}
+ho_p <- ggplot(full_summary, aes(x = species, y = mean_Ho, fill = species)) +
+  labs(y = "Ho") +
+  geom_violin(trim = FALSE, alpha = 0.5) +
+  geom_boxplot(width = 0.2) + 
+  scale_fill_manual(values = c("#0C59FE","#228B22")) +
+  theme_classic() +
+  theme(legend.position = "none",
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        title = element_text(face = "bold"),
+        legend.text = element_text(face = "italic")) + 
+  stat_compare_means(method = "wilcox.test", label = "p.signif")
+
+pi_p <- ho_p + aes(y = mean_PI) +
+  labs(y = "Pi", title = "Genetic diversity")
+
+fst_p <- ho_p + aes(y = FST_mean) +
+  labs(y = "FST", title = "Genetic differentiation")
+
+kin_p <- ho_p + aes(y = KIN_mean) +
+  labs(y = "Kinship")
+
+froh_p <- ho_p + aes(y = mean_FRoH_0.3) +
+  labs(y = "FRoH", title = "Inbreeding")
+
+fis_p <- ho_p + aes(y = mean_FIS) +
+  labs(y = "FIS")
+
+ne_p <- ho_p + aes(y = ne) +
+  labs(y = "Ne", title = "Effective population size") +
+  theme(legend.position = "bottom",
+        legend.title = element_blank())
+  
+final_plot <- (
+  (pi_p + ho_p) / 
+  (fst_p + kin_p) / 
+  (froh_p + fis_p) / 
+  ne_p
+) +
+  plot_annotation(tag_levels = 'A')
+
+# Print the final plot
+final_plot
+ggsave(paste0(FIGURE, "fig6.png"),
+       width = 4, height = 8, units = "in", dpi = 300) 
+ggsave(paste0(FIGURE, "fig6.svg"),
+       width = 4, height = 8, units = "in", dpi = 300) 
+ggsave(paste0(FIGURE, "fig6.pdf"),
+       width = 4, height = 8, units = "in", dpi = 300) 
+```

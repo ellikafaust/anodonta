@@ -1,0 +1,371 @@
+---
+title: "Figure 1"
+output:
+  html_notebook:
+    toc: yes
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    toc_float: true
+    theme: united  # many options for theme, this one is my favorites.
+    highlight: tango  # specifies the syntax highlighting style
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---
+
+# Set up
+
+```{r set up}
+HOME <- "." # directory 
+DATA <- paste0(HOME, "/data/") # data folder
+RESULT <- paste0(HOME, "/results/") #result folder
+FIGURE <- paste0(HOME, "/figures/") #result folder
+SCRATCH <- paste0(HOME, "/scratch/") #result folder
+INFO <- paste0(DATA, "metadata.csv")
+ORDER <- paste0(DATA, "group_order.csv")
+```
+
+```{r}
+library(tidyverse)  # ggplot2, dplyr, tidyr, readr, purrr, tibble
+library(magrittr)   # pipes
+library(sf)         # spatial data handling
+library(raster)     # raster handling (needed for relief)
+library(stars)
+library(ggspatial)
+library(fishualize)
+library(patchwork)
+library(ggtree)    # For tree visualization
+library(ape)
+```
+
+
+
+```{r}
+theme_set(theme_light())
+
+# list species in package
+spp <- fishualize::fish_palettes()
+fish(6, option = spp[132])
+```
+
+## Load meta data
+
+```{r}
+info <- read.csv(INFO, stringsAsFactors = TRUE, header = TRUE)
+
+order <- read_csv(ORDER) %>% 
+  mutate(across(where(is.character), fct_inorder))
+
+meta <- full_join(order, info, multiple = "all") %>% 
+  mutate(species4 = case_when(
+    species == "Anodonta anatina" &  catchment == "Ticino" ~ "Anodonta sp.",
+    TRUE ~ species
+  ))
+
+meta$species4 <- factor(meta$species4, levels = c("Anodonta anatina", "Anodonta sp.", "Anodonta cygnea", "Anodonta exulcerata"))
+```
+
+
+```{r}
+# the number of locations
+n_locations <- length(levels(order$location))
+# their shape in figures
+shp_locations <- rep(21:25,10)[1:n_locations]
+# their colour in figures
+col_locations <- fish(n_locations, option = spp[132])
+col_shp <- tibble(location=levels(order$location), shp_loc=shp_locations, col_loc=col_locations)
+
+```
+
+
+
+```{r}
+meta_sum_all <- meta %>%  
+  group_by(canton, catchment, location, pop_code, x_coord, y_coord) %>% 
+  summarise(AA=sum(species=="Anodonta anatina"),AC=sum(species=="Anodonta cygnea"), AE=sum(species=="Anodonta exulcerata")) %>% 
+  mutate(total = AA+AC+AE)
+```
+
+
+
+# Map
+
+## Load data
+```{r}
+data1 <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Gesamtfläche_gf/K4_polg20230101_gf/K4polg20230101gf_ch2007Poly.shp")
+data2 <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Gesamtfläche_gf/K4_bezk20220101_gf/K4bezk20220101gf_ch2007Poly.shp")
+
+# Swiss natiaonl border
+swiss_geo <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Gesamtfläche_gf/K4_suis18480101_gf/K4suis18480101gf_ch2007Poly.shp")
+
+# Kantons
+kanton_geo <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Gesamtfläche_gf/K4_kant20220101_gf/K4kant20220101gf_ch2007Poly.shp")
+
+# Municipalities
+#municipality_geo <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Vegetationsfl„che_vf/K4_polg20210101_vf/K4polg20210101vf_ch2007Poly.shp")
+municipality_geo <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Vegetationsfläche_vf/K4_polg20230101_vf/K4polg20230101vf_ch2007Poly.shp") 
+
+# Lakes and rivers
+lake1_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_seenyyyymmdd/k4seenyyyymmdd11_ch2007Poly.shp") # lakes- category 1 (i.e. > 500 ha)
+lake2_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_seenyyyymmdd/k4seenyyyymmdd22_ch2007Poly.shp") # lakes- category 2 (i.e. > 195-499 ha)
+
+# Compile the data into one table and transform
+lake_geo <- rbind(lake1_geo,lake2_geo)
+
+#river basins
+river_basin <- read_sf("data/MapData/river_basin/a0301_flussv1_0.shp")
+
+river1_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd11_ch2007.shp")
+river2_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd22_ch2007.shp")
+river3_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd33_ch2007.shp")
+river4_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd44_ch2007.shp")
+river5_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd55_ch2007.shp")
+
+# Compile the data into one table
+river_geo <- rbind(river1_geo,river2_geo,river3_geo,river4_geo,river5_geo) 
+```
+
+
+## Base map
+
+```{r}
+
+# Rhine, Aare, Resu and Limat visable
+basin_col <- c("#490961FF","#161613FF","#82BBAAFF","#4091D5FF","#E46D00FF","#BFAD7AFF","#B24531FF","grey","grey")
+
+
+# Rhine only
+#basin_col <- c("#161613FF","#161613FF","#161613FF","#161613FF","#E46D00FF", "#BFAD7AFF","#B24531FF","grey","grey")
+# Rhine and Aare only
+#basin_col <- c("#4D3D61FF","#161613FF","#4D3D61FF","#4D3D61FF","#E46D00FF", "#BFAD7AFF","#B24531FF","grey","grey")
+
+# Clip layers to the Swiss border
+river_basin_clipped <- st_intersection(river_basin, swiss_geo)
+
+map_ch <- ggplot() +
+  #geom_stars(data = relief, inherit.aes = FALSE, aes(alpha = value)) +
+  #geom_raster(data = relief, inherit.aes = FALSE,aes(x = x, y = y, alpha = value)) +
+  geom_sf(data = river_basin_clipped, fill = alpha(basin_col, 0.5) , col = "transparent") +
+  #geom_sf(data = kanton_geo, fill = "transparent", size = 1.5, col ="black") +
+  geom_sf(data = lake_geo, fill = "lightblue") +
+  geom_sf(data = river_geo, colour = "lightblue") +
+  geom_sf(data = swiss_geo, fill = "transparent", col ="black") +
+  #labs(title = "Sampling map", x = "x_coorditude", y = "t_coorditude")
+  scale_fill_fish_d(option = spp[132]) +
+  scale_color_fish_d(option = spp[132]) +
+  coord_sf() +
+  annotation_scale(location = "br", width_hint = 0.2, height = unit(0.15, "cm")) +
+  annotation_north_arrow(location = "br", which_north = "true", pad_x = unit(0.2, "in"), pad_y = unit(0.2, "in"), style = north_arrow_fancy_orienteering, width = unit(1, "cm"), height = unit(1, "cm")) +
+  theme_void()
+
+#ggsave('results/base_map.png', bg='transparent', dpi=300, width = 10, height = 6)
+
+```
+
+## Map species pies
+
+```{r}
+
+# Generate the pie charts for each population
+
+# Create map and overlay pie chart
+pop_tot <- meta %>% 
+  group_by(catchment, location, pop_code, x_coord, y_coord) %>%
+  summarise(total = n())
+
+species_tot <- meta %>% 
+  group_by(catchment, location, pop_code, x_coord, y_coord, species4) %>%
+  summarise(species_tot = n())
+
+pie_data <- full_join(pop_tot, species_tot, by = c("catchment", "location", "pop_code", "x_coord", "y_coord")) %>% 
+  mutate(fraction=species_tot/total) %>% 
+  tidyr::expand(species4)
+
+
+# Ensure all species are listed for each location, even with zero counts
+species_list <- unique(meta$species4)  # Get the unique species names
+
+# Create full combinations of catchment, location, pop_code, and species
+expanded_data <- pop_tot %>%
+  tidyr::expand(species4 = species_list)  # Create all combinations of species for each location
+
+# Join with species_tot to get species counts, ensuring species with 0 counts are included
+pie_data <- full_join(expanded_data, pop_tot) %>% 
+  full_join(species_tot) %>%
+  mutate(species_tot = ifelse(is.na(species_tot), 0, species_tot)) %>%  # Replace NA species_tot with 0
+  mutate(fraction = species_tot / total)  # Calculate the fraction for each species
+
+pie_plots <- lapply(unique(pie_data$pop_code), function(p) {
+  pie_subset <- pie_data[pie_data$pop_code == p, ]
+  ggplot(pie_subset, aes(x = "", y = species_tot, fill = species4)) +
+    geom_bar(stat = "identity", width = 1,colour = "black", linewidth=0.1) +
+    coord_polar("y") +
+    theme_void() +
+    theme(legend.position = "none") +
+    scale_fill_manual(values =  c("#0C59FE","#FFD700","#228B22","#DC143C"))
+})
+
+# some other options
+"#00CED1"
+
+"#FFA500" 
+
+"#FF8C00" # (Dark Orange) – warm, energetic, and balances red/green without clashing
+"#FFD700" # (Gold) – already in your palette and works beautifully
+"#8B4513"  # (Saddle Brown) – earthy and deep, grounding the colors
+```
+
+
+```{r, fig.width=6, fig.height=7}
+pop_sf <- pop_tot %>% 
+  st_as_sf(coords = c('x_coord', 'y_coord')) %>% 
+  st_set_crs(4150)
+
+
+# Create a list to store the annotations
+annotations <- list()
+
+# Generate annotations for each pie chart with size scaling based on total
+for (i in 1:length(pie_plots)) {
+  pie_geometry <- st_coordinates(pop_sf)[i,]
+  total_size <- pop_tot$total[i]  # Total count for the current population
+  
+  # Scale the size of the pie chart based on total
+  #size_scale <- log(total_size, 20)*10000  # Adjust the divisor to scale size appropriately
+  size_scale <- sqrt(total_size)*2000  # Adjust the divisor to scale size appropriately
+  
+  annotations[[i]] <- annotation_custom(
+    ggplotGrob(pie_plots[[i]]), 
+    xmin = pie_geometry[1] - size_scale,  # Adjust for positioning with scaling
+    xmax = pie_geometry[1] + size_scale,  # Adjust for positioning with scaling
+    ymin = pie_geometry[2] - size_scale,  # Adjust for positioning with scaling
+    ymax = pie_geometry[2] + size_scale   # Adjust for positioning with scaling
+  )
+}
+```
+
+
+```{r, fig.width=6, fig.height=7}
+meta_sum_all$total
+
+
+p_map <- map_ch +
+  annotations +
+     scale_x_continuous(expand = c(0, 0)) + 
+     scale_y_continuous(expand = c(0, 0))
+
+p_map 
+```
+
+# PCA
+
+```{r}
+# make path to eigenvector and Axis Percentage
+VEC <- paste0(SCRATCH, "pca/all_species.eigenvec")
+VAL <- paste0(SCRATCH, "pca/all_species.eigenval")
+PVE <- paste0(SCRATCH, "pca/all_species.pve")
+```
+
+
+
+```{r}
+# read in data
+pca <- read_table(VEC, col_names = FALSE)
+pve <- scan(PVE) %>% 
+  paste0("%")
+
+# sort out the pca data
+pca_df <- pca %>% 
+  dplyr::select(-X1) %>% 
+  dplyr::rename(seq_name=X2) %>% 
+  rename_with(~ paste0("PC", seq_along(.)), starts_with("X")) %>% 
+  left_join(meta)
+
+pca1_2 <- ggplot(pca_df, aes(x=PC1, y=PC2, fill=species4, shape=species4)) +
+  geom_point(size=3, alpha=0.7) +
+  scale_fill_manual(values = c("#0C59FE","#FFD700","#228B22","#DC143C")) +
+  labs(x=paste("PC1", pve[1]), y=paste("PC2", pve[2])) +
+  scale_shape_manual(values= rep(21,4)) +
+  theme_bw() +
+  theme(
+    legend.position = "top",  # Moves the legend inside the plot (top-right)
+    legend.background = element_rect(fill = alpha("white", 0.7)),  # Semi-transparent background
+    legend.key = element_blank(),  # Removes key background
+    legend.title = element_blank(),
+  )
+
+pca3_4 <- pca1_2 + aes(x=PC3, y=PC4) +
+  labs(x=paste("PC3", pve[3]), y=paste("PC4", pve[4]))
+
+pca1_2 + pca3_4
+```
+
+# Tree
+
+```{r}
+DIST <- paste0(SCRATCH, "distance_matrix.dist")
+DIST_ID <- paste0(SCRATCH, "distance_matrix.dist.id")
+
+# Load pairwise distance matrix
+dist_matrix <- as.matrix(read.table(DIST))
+rownames(dist_matrix) <- colnames(dist_matrix) <- read.table(DIST_ID)[, 2]
+
+# Convert to distance object and build UPGMA tree
+dist_obj <- as.dist(dist_matrix)
+tree <- nj(dist_obj)  # For UPGMA, you can also use hclust()
+tree <- as.phylo(hclust(dist_obj, method = "average"))
+```
+
+
+```{r, fig.width=5, fig.height=5}
+
+# Load the Newick tree
+#tree <- read.tree(paste0(SCRATCH, "upgma_tree.nwk"))
+
+# Ensure the sample IDs match the tree tip labels
+meta_info <- meta %>% 
+  mutate(label = as.character(seq_name)) %>% 
+  filter(label %in% tree$tip.label) %>% 
+  dplyr::select(label, everything()) 
+
+# Verify metadata and tree labels match
+all(tree$tip.label %in% meta_info$label)
+# If FALSE, check for inconsistencies (e.g., typos or missing data)
+
+# Add metadata to the tree for visualization
+p_tree <- ggtree(tree, size =0.2) %<+% meta_info +  # `%<+%` adds metadata to ggtree
+  scale_colour_manual(values = c("#0C59FE","#FFD700","#228B22","#DC143C")) +
+  geom_tippoint(aes(color = species4), size = 1, alpha = 0.8)  +
+  theme_tree2() + # Removes excess white space
+  theme(legend.position = "none")
+p_tree
+
+```
+
+
+# Plot figure 1
+
+```{r}
+p_pca <- pca1_2 / pca3_4 +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "right")
+
+layout <- c(
+    patchwork::area(t = 1, l = 3, b = 6, r = 5),
+    patchwork::area(t = 4, l = 1, b = 6, r = 2),
+    patchwork::area(t =1, l = 1, b = 3, r = 4)
+)
+
+p_tree + p_pca + p_map  +
+  plot_layout(design = layout)
+
+ggsave(paste0(FIGURE, "fig1.png"),
+       width = 8, height = 9, units = "in", dpi = 300)
+ggsave(paste0(FIGURE, "fig1.pdf"),
+       width = 8, height = 9, units = "in", dpi = 300)
+ggsave(paste0(FIGURE, "fig1.svg"),
+       width = 8, height = 9, units = "in", dpi = 300)
+# just smaller than a4 = 8*11 inches or 190*277 mm
+
+```
+

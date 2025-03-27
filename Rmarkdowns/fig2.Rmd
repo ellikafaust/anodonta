@@ -1,0 +1,508 @@
+---
+title: "Figure 3"
+output:
+  html_notebook:
+    toc: yes
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    toc_float: true
+    theme: united  # many options for theme, this one is my favorites.
+    highlight: tango  # specifies the syntax highlighting style
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---
+# Set up
+
+Creating paths and loading in data
+```{r paths}
+HOME <- "." # directory 
+DATA <- paste0(HOME, "/data/") # data folder
+RESULT <- paste0(HOME, "/results/") #result folder
+SCRATCH <- paste0(HOME, "/scratch/") #scratch folder
+FIGURE <- paste0(HOME, "/figures/") #figure folder
+
+# make path to meta data
+INFO <- paste0(DATA, "metadata_all.csv")
+ORDER <- paste0(DATA, "group_order.csv")
+```
+
+```{r include=FALSE}
+library(tidyverse)
+library(fishualize)
+library(patchwork)
+library(sf)
+library(ggspatial)
+```
+
+
+```{r}
+theme_set(theme_light(base_size = 10))
+# list species in package
+spp <- fishualize::fish_palettes()
+```
+
+
+
+## Meta data
+
+```{r}
+info <- read.csv(INFO, stringsAsFactors = TRUE, header = TRUE)
+
+order <- read_csv(ORDER) %>% 
+  mutate(across(where(is.character), fct_inorder))
+
+
+meta <- full_join(order, info, multiple = "all") %>% 
+  filter(filtering=="passed") %>% 
+  filter(species_code %in% c("AA")) %>% 
+  droplevels()
+
+
+groups_df <- meta %>%
+  dplyr::select(species, species_code, order, location, pop_code, catchment, sample)
+
+
+```
+
+
+
+```{r}
+meta_sum_all <- meta %>%  
+  filter(filtering=="passed") %>% 
+  group_by(canton, catchment, location, pop_code, x_coord, y_coord) %>% 
+  summarise(AA=sum(species=="Anodonta anatina"),AC=sum(species=="Anodonta cygnea"), AE=sum(species=="Anodonta exulcerata")) %>% 
+  droplevels()
+```
+
+```{r}
+# the number of locations
+n_locations <- length(levels(order$location))
+# their shape in figures
+shp_locations <- rep(21:25,10)[1:n_locations]
+# their colour in figures
+col_locations <- fish(n_locations, option = spp[132])
+
+# make tibble for colours and shapes
+col_shp <- tibble(location=levels(order$location), shp_loc=shp_locations, col_loc=col_locations) %>% 
+  filter(location %in% meta_sum_all$location)
+
+```
+
+
+# Map
+
+
+## Load data
+```{r}
+data1 <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Gesamtfläche_gf/K4_polg20230101_gf/K4polg20230101gf_ch2007Poly.shp")
+data2 <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Gesamtfläche_gf/K4_bezk20220101_gf/K4bezk20220101gf_ch2007Poly.shp")
+
+# Swiss natiaonl border
+swiss_geo <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Gesamtfläche_gf/K4_suis18480101_gf/K4suis18480101gf_ch2007Poly.shp")
+
+# Kantons
+kanton_geo <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Gesamtfläche_gf/K4_kant20220101_gf/K4kant20220101gf_ch2007Poly.shp")
+
+# Municipalities
+#municipality_geo <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Vegetationsfl„che_vf/K4_polg20210101_vf/K4polg20210101vf_ch2007Poly.shp")
+municipality_geo <- read_sf("data/MapData/2023_GEOM_TK/01_INST/Vegetationsfläche_vf/K4_polg20230101_vf/K4polg20230101vf_ch2007Poly.shp") 
+
+# Lakes and rivers
+lake1_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_seenyyyymmdd/k4seenyyyymmdd11_ch2007Poly.shp") # lakes- category 1 (i.e. > 500 ha)
+lake2_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_seenyyyymmdd/k4seenyyyymmdd22_ch2007Poly.shp") # lakes- category 2 (i.e. > 195-499 ha)
+
+# Compile the data into one table and transform
+lake_geo <- rbind(lake1_geo,lake2_geo)
+
+#river basins
+river_basin <- read_sf("data/MapData/river_basin/a0301_flussv1_0.shp")
+
+river1_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd11_ch2007.shp")
+river2_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd22_ch2007.shp")
+river3_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd33_ch2007.shp")
+river4_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd44_ch2007.shp")
+river5_geo <- read_sf("data/MapData/2023_GEOM_TK/00_TOPO/K4_flusyyyymmdd/k4flusyyyymmdd55_ch2007.shp")
+
+# Compile the data into one table
+river_geo <- rbind(river1_geo,river2_geo,river3_geo,river4_geo,river5_geo) 
+```
+
+
+## Base map
+
+```{r}
+
+# Rhine, Aare, Resu and Limat visable
+basin_col <- c("#490961FF","#161613FF","#82BBAAFF","#4091D5FF","#E46D00FF","#BFAD7AFF","#B24531FF","grey","grey")
+
+# Clip layers to the Swiss border
+river_basin_clipped <- st_intersection(river_basin, swiss_geo)
+
+map_ch <- ggplot() +
+  #geom_stars(data = relief, inherit.aes = FALSE, aes(alpha = value)) +
+  #geom_raster(data = relief, inherit.aes = FALSE,aes(x = x, y = y, alpha = value)) +
+  geom_sf(data = river_basin_clipped, fill = alpha(basin_col, 0.5) , col = "transparent") +
+  #geom_sf(data = kanton_geo, fill = "transparent", size = 1.5, col ="black") +
+  geom_sf(data = lake_geo, fill = "lightblue") +
+  geom_sf(data = river_geo, colour = "lightblue") +
+  geom_sf(data = swiss_geo, fill = "transparent", col ="black") +
+  #labs(title = "Sampling map", x = "x_coorditude", y = "t_coorditude")
+  coord_sf() +
+  annotation_scale(location = "br", width_hint = 0.2, height = unit(0.15, "cm"), pad_y = unit(0.6, "in")) +
+  annotation_north_arrow(location = "br", which_north = "true", pad_x = unit(0.2, "in"), pad_y = unit(0.7, "in"), style = north_arrow_fancy_orienteering, width = unit(1, "cm"), height = unit(1, "cm")) +
+  theme_void() 
+
+map_ch 
+```
+
+```{r, fig.width=10, fig.height=10}
+p_map <- map_ch +
+  geom_point(data = meta_sum_all, mapping = aes(x = x_coord, y = y_coord, fill = location, shape = location), alpha =0.7, size=3) + 
+  scale_size_continuous(breaks = scales::breaks_width(1)) +
+  labs(fill = "Location", shape = "Location") +
+  scale_shape_manual(values= col_shp$shp_loc) +
+  scale_fill_manual(values= col_shp$col_loc) +
+  theme(legend.position = c(0.5, -0.05),
+        legend.title = element_blank(),
+        legend.key.spacing = unit(0, "cm"))+
+        #legend.margin = margin(0, 0, 0, 0))+
+  guides(fill = guide_legend(ncol = 7), shape = guide_legend(ncol = 7))
+
+
+p_map
+```
+
+# PCA
+
+```{r}
+# make path to eigenvector and Axis Percentage
+VAL <- list.files(paste0(SCRATCH, "pca"),pattern = "eigenval$", full.names = TRUE)
+VEC <- list.files(paste0(SCRATCH, "pca"),pattern = "eigenvec$", full.names = TRUE)
+PVE <- list.files(paste0(SCRATCH, "pca"),pattern = "pve$", full.names = TRUE)
+```
+
+
+
+```{r}
+# read in data
+pca <- read_table(VEC[1], col_names = FALSE)
+pve <- scan(PVE[1]) %>% 
+  paste0("%")
+
+# sort out the pca data
+pca_df <- pca %>% 
+  dplyr::select(-X1) %>% 
+  dplyr::rename(sample=X2) %>% 
+  rename_with(~ paste0("PC", seq_along(.)), starts_with("X")) %>% 
+  left_join(meta)
+
+pca1_2 <- ggplot(pca_df, aes(x=PC1, y=PC2, fill=location, shape = location)) +
+  geom_point(size=3, alpha=0.7) +
+  labs(x=paste("PC1,", pve[1]), y=paste("PC2,", pve[2])) +
+  scale_shape_manual(values= col_shp$shp_loc) +
+  scale_fill_manual(values= col_shp$col_loc) +
+  theme(
+    legend.position = "none",
+    #axis.text = element_text(size = 12),
+    #axis.title = element_text(size = 15),
+    #plot.title = element_text(size = 20),
+    #legend.title = element_text(size = 22)
+  )
+
+pca3_4 <- pca1_2 + aes(x=PC3, y=PC4) +
+  labs(x=paste("PC3,", pve[3]), y=paste("PC4,", pve[4])) +
+  theme(legend.position = "none")
+
+pca1_2 + pca3_4 + plot_layout(guides = "collect") 
+```
+
+
+
+# Admixture
+
+```{r}
+
+
+ADM <- paste0(SCRATCH, "admix") # data folder
+FAM <- paste0(ADM, "/anatina_ld.fam")
+FAM_AA <- paste0(ADM, "/anatina_N_mac5_ld.fam")
+
+
+# make a list of sample names in the right order
+ind <- read_table(FAM, col_names = FALSE) %>% 
+  mutate(sample = X1) %>% 
+  dplyr::select(sample)
+```
+
+
+```{r}
+adm_all <- "anatina_ld_2M"
+
+meta_all <- ind %>% 
+  left_join(meta) %>%
+  droplevels()
+```
+
+
+
+
+```{r message=FALSE, warning=FALSE}
+#make empty tibble
+adm_temp <- tibble(sample=character(),
+                   k=numeric(),
+                   Q=character(),
+                   value=numeric())
+
+
+nk <- length(list.files(ADM, pattern = paste0("^",adm_all,"\\.",".*Q$")))
+
+for (k in 1:nk){
+  data <- read_table(list.files(ADM, pattern = paste0("^",adm_all,"\\.", k,"\\.Q$"), full.names = TRUE), col_names = paste0("Q",seq(1:k)))
+  data$sample <- meta_all$sample
+  data$k <- k
+  #This step converts from wide to long.
+  data %>% pivot_longer(names_to = "Q", values_to = "value", -c(sample,k)) -> data
+  adm_temp <- rbind(adm_temp,data)
+}
+
+adm_all_df <- adm_temp %>% 
+  left_join(meta_all, by = "sample") %>% 
+  mutate(sample = factor(sample)) %>% 
+  mutate(Q=factor(Q))
+```
+
+
+
+```{r}
+# colours from
+# fish(6, option= spp[132])
+
+p_adm <- adm_all_df %>% 
+  filter(k==5) %>% 
+   ggplot(aes(x=sample, y=value, fill=Q)) +
+    geom_bar(stat = "identity", position = "fill", width = 1) +
+    facet_grid(. ~ location, switch = "x", scales = "free_x", space = "free") +
+  labs(x = "Individuals", y = "Ancestry") +
+    theme_minimal() + 
+    scale_fill_manual(values = c("#161613FF", "#EA8C1DFF", "#B24531FF", "#00A4E2FF", "#92B5A6FF")) +
+    #scale_y_continuous(expand = c(0, 0)) +
+    #scale_x_discrete(expand = expansion(add = 1)) +
+    theme(
+      panel.spacing.x = unit(0.1, "lines"),
+      axis.text.x = element_blank(),
+      panel.grid = element_blank(),
+      strip.text.x = element_blank(),
+      legend.position = "none")
+      #axis.text.y = element_blank())
+
+
+p_adm
+
+
+```
+
+
+# Isolation by distance
+
+```{r}
+# FST files
+FST <- paste0(SCRATCH, "fst/anatina_pop5.fst.summary")
+#FST_LD <- paste0(SCRATCH, "fst/anatina_ld_pop5.fst.summary")
+
+NET_DIST <- paste0(DATA, "network_distance_matrix.tsv")
+
+```
+
+
+```{r}
+#reading in the data
+fst_data <- read_table(FST) %>% 
+  mutate(across(where(is.character), fct)) %>% 
+  rename(POP1=`#POP1`) %>% 
+  drop_na()
+
+
+# renaming the columns
+code_df <- groups_df %>% 
+  group_by(species_code, pop_code) %>%
+  arrange(species_code) %>% 
+  mutate(full_code= fct_inorder(paste(species_code, catchment, pop_code, sep = "_")), 
+         code= fct_inorder(paste(species_code, pop_code, sep = "_")),
+         n=n()) %>% 
+  filter(n >= 5) %>%
+  dplyr::select(code, full_code, species, catchment, location) %>% 
+  unique()
+
+# upper right to make a matrix
+fst_rev <- fst_data %>% 
+  rename(POP1 = POP2, POP2 = POP1)
+
+# make a full matrix with upper and lower tri and filled center
+fst_df <- fst_data %>%
+  full_join(fst_rev) %>% 
+  left_join(code_df, by = c("POP1" = "code")) %>% 
+  mutate(POP1=full_code, .keep = "unused") %>% 
+  left_join(code_df, by = c("POP2" = "code")) %>% 
+  mutate(POP2=full_code, .keep = "unused") %>% 
+  mutate(FST = ifelse(HUDSON_FST < 0, 0, HUDSON_FST), .keep="unused") %>% 
+  full_join(tibble(POP1= code_df$full_code, POP2 = code_df$full_code, FST = 0))
+
+fst_mat <- fst_df %>% 
+  dplyr::select(POP1, POP2, FST) %>% 
+  arrange(POP1,POP2) %>% 
+  pivot_wider(names_from = POP1, values_from = FST) %>% 
+  column_to_rownames("POP2")
+```
+
+
+```{r}
+dim(fst_mat)
+nrow(fst_mat)
+# calculate FST/(1-FST)
+fst_dist <- fst_mat / (matrix(rep(1, nrow(fst_mat)*nrow(fst_mat)), ncol=nrow(fst_mat), nrow=nrow(fst_mat)) - fst_mat)
+```
+
+```{r}
+dist <- read_tsv(NET_DIST)
+rownames(dist) <- colnames(dist)[-1]
+
+dist_df <- dist %>% 
+  rename(location.x = ...1) %>% 
+  pivot_longer(!location.x, names_to = "location.y", values_to = "dist") %>% 
+  drop_na()
+```
+
+```{r}
+# filter for locations that have more than 5 individuals and are from connected catchments
+ibd_meta <- meta %>% 
+  filter(catchment %in% c("Rhein", "Aare","Limmat", "Reuss")) %>%
+  filter(location %in% dist_df$location.x) %>%
+  group_by(species_code, species, catchment, location, pop_code) %>%
+  summarise(n=n()) %>%
+  filter(n >= 5) %>% 
+  mutate(full_code= fct_inorder(paste(species_code, catchment, pop_code, sep = "_")))
+```
+
+
+
+```{r}
+# upper right to make a matrix
+dist_df_rev <- dist_df %>% 
+  rename(location.x = location.y, location.y = location.x)
+
+#
+fst_dist_df <- dist_df %>% 
+  full_join(dist_df_rev) %>% 
+  filter(dist !=0) %>% 
+  right_join(fst_df) %>% 
+  mutate(fst=FST/(1-FST)) %>% 
+  filter(POP1 %in% ibd_meta$full_code, POP2 %in% ibd_meta$full_code) %>% 
+  filter(!is.na(dist))
+
+```
+
+
+```{r}
+### Visualize the results by first creating a ggplot showing the relationship between slope and geographic distances.
+
+ibd_ac <- fst_dist_df %>% 
+  filter(species.x == "Anodonta anatina" & species.y == "Anodonta anatina") %>% 
+  ggplot(aes(x=dist, y=fst)) + 
+  geom_point(size=2) + 
+  labs(x = "River network distance", y = "FST/(1-FST)")+
+  geom_smooth(method="lm",color="black")+
+  theme_classic() +
+  theme(
+    legend.title = element_blank(),
+    title = element_blank()
+  )
+ibd_ac
+```
+
+
+```{r}
+# making geno dist
+gen_dist <- fst_dist_df %>% 
+  arrange(POP1, POP2) %>%
+  dplyr::select(POP1, POP2,fst) %>% 
+  pivot_wider(names_from = POP2, values_from = fst, values_fill = 0) %>% 
+  column_to_rownames("POP1")  %>% 
+  as.dist()
+
+# make geo dist
+geo_dist <- fst_dist_df %>% 
+  arrange(POP1, POP2) %>%
+  dplyr::select(POP1, POP2,dist) %>% 
+  pivot_wider(names_from = POP2, values_from = dist, values_fill = 0) %>% 
+  column_to_rownames("POP1")  %>% 
+  as.dist()
+```
+
+## mantel test
+
+
+```{r}
+
+# Assuming 'fst_dist_df' is a tibble with two columns: geographic distance ('dist') and FST (genetic distance 'fst')
+# Perform Mantel test
+mantel_result <- vegan::mantel(dist(fst_dist_df$dist), dist(fst_dist_df$fst))
+print(mantel_result)
+
+# Extract correlation coefficient and p-value
+mantel_r <- round(mantel_result$statistic, 3)
+mantel_p <- mantel_result$signif
+```
+
+```{r}
+ibd_ac <- fst_dist_df %>% 
+  filter(species.x == "Anodonta anatina" & species.y == "Anodonta anatina") %>% 
+  ggplot(aes(x=dist, y=fst)) + 
+  geom_point(size=2) + 
+  labs(x = "River network distance", y = "FST/(1-FST)")+
+  geom_smooth(method="lm",color="black")+
+  theme_classic() +
+  theme(
+    legend.title = element_blank()
+  ) +
+  annotate("text", x = max(fst_dist_df$dist) * 0.1, 
+           y = max(fst_dist_df$fst) * 0.9, 
+           label = paste("Mantel r =", mantel_r, "\np =", mantel_p))
+ibd_ac
+```
+
+
+
+# Make Figure
+
+
+
+
+```{r}
+
+pca_p <- pca1_2 + pca3_4
+
+
+layout <- c(
+    patchwork::area(t=1,l=1,b=4, r=2),
+    patchwork::area(t=5,l=1,b=6, r=2),
+    patchwork::area(t = 7, l = 1, b = 7, r = 2),
+    patchwork::area(t =8, l = 1, b = 8, r = 2)
+)
+
+p_map + pca_p + p_adm + ibd_ac +
+  plot_layout(design = layout)
+
+# just smaller than a4 = 8*11 inches or 190*277 mm
+
+
+ggsave(paste0(FIGURE, "fig2.png"),
+       width = 7, height = 11, units = "in", dpi = 300) 
+ggsave(paste0(FIGURE, "fig2.svg"),
+       width = 7, height = 11, units = "in", dpi = 300) 
+ggsave(paste0(FIGURE, "fig2.pdf"),
+       width = 7, height = 11, units = "in", dpi = 300) 
+
+```
+
+
