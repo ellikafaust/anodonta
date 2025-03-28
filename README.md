@@ -7,7 +7,7 @@ This repository contains the code and analysis pipelines associated with the stu
 ## Repository Structure
 
 - `README.md` – This file, providing an overview of the repository.
-- `Rmarkdowns/` – Contains RMarkdown files used for data analysis and visualization.
+- `R code/` – Contains RMarkdown files used for data analysis and visualization.
 - `scripts/` – Directory with various helper scripts for processing and analysis.
 - `wgs_pipeline.txt` – Whole genome sequencing (WGS) pipeline
 
