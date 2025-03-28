@@ -13,7 +13,7 @@ This repository contains the code and analysis pipelines associated with the stu
 
 ## Description
 
-This repository includes bioinformatics pipelines and scripts used in the analysis of whole genome sequences and genetic diversity of *Anodonta* mussels. The `.sh` pipeline files contain step-by-step workflows for processing genomic data.
+This repository includes bioinformatics pipelines and scripts used in the analysis of whole genome sequences and genetic diversity of *Anodonta* mussels. The `wgs_pipeline.txt`  contain step-by-step workflows for processing genomic data.
 
 ## Usage
 
