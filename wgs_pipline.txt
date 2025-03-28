@@ -1,185 +1,54 @@
-# WGS pipeline for duckmussel Anodonta anatina
-# Last updated by Ellika Faust September 2024
-
-# =========================================================================
-### 0. Useful commands etc.
-# =========================================================================
-
-# user guides
-# https://www.gdc-docs.ethz.ch/EulerManual/site/
-# https://www.gdc-docs.ethz.ch/GeneticDiversityAnalysis/GDA21/site/snps/
-
-# available submit scripts
-/cluster/project/gdc/shared/scripts/submitscripts/
-
-
-P976=/cluster/work/gdc/shared/p976
-
-/cluster/work/gdc/shared/p976
-
-
-# submit script 
-######### !OBS! ###########
-# -n -c and -p is used differently to Rackham!
-
-#SBATCH --ntasks=1               #Requesting 1 node (is always 1)
-#SBATCH --cpus-per-task=1        #Requesting 1 CPU
-#SBATCH --mem-per-cpu=2G         #Requesting 2 Gb memory per core 
-# example
-sbatch -n 1 -c 1 --mem-per-cpu 2G -t 1:00:00 -J s2b -o s2b.%J.out -e s2b.e%J.err --mail-type ALL --mail-user julie.conrads@eawag.ch s2b.sh
-
-# interactive
-srun --cpus-per-task=1 --time=04:00:00 --pty bash #
-srun --cpus-per-task=1 --mem-per-cpu=4G --time=04:00:00 --pty bash #
-
-# Overview of the submitted jobs (pending and running)
-squeue
-
-#chain a job
-sbatch --dependency=afterok:"46888211_9:46888211_10" < jobB.slurm.sh
-
-# CPU and memory usage of running jobs
-myjobs -r
-myjobs -j <Job-ID>/<Array-ID>
-
-# Efficiency of finished job(s)
-source $GDCstack
-module load reportseff/2.7.6
-reportseff 18527789
-reportseff 18580780
-reportseff 18683418
-
-
-# Connect to a node to check on a job. This is an advanced command. Can be useful to check on the real-time CPU usage or data in the local scratch space.
-srun --interactive --jobid <job-ID> --pty bash
-
-# Disk usage of your personal home and your scratch
-/cluster/apps/local/lquota
-
-# Available disk space of the GDC share (only works if you are on the works file system)
-/cluster/apps/local/lquota /cluster/work/gdc/shared/p976
-
-# Archive tar.gz
-tar cvzf <folder>.tar.gz <folder>
-# Extract archive
-tar xvf <folder>.tar.gz
-# list content of archive
-tar -ztvf file.tar.gz
-# Extract specific file
-tar -zxvf file.tar.gz path/to/file
-
-# Archive fa.gz
-gzip -d <folder>.fa.gz
-
-# Project directories
-/cluster/work/gdc/shared/p979 # Grayling
-/cluster/work/gdc/shared/p976 # mussels
-
-# module stacks
-lmod2env #new software stacks
-env2lmod #old software stack
-# source /cluster/apps/local/lmod2env
-
-source $GDCstack
-module load vcftools/0.1.16-kpfcvxs
-
-
+# WGS pipeline for Anodonta 
+# Last updated by Ellika Faust March 2025
 
 # ==================================================================================================================================================
 # Outline
 # ==================================================================================================================================================
-# 1. Download genome and index
-# 2. Download data
-# 3. Quality check (FastQC)
-# 4. Mapping reads to genome (bwa-mem2)
-# 5. Variant calling (bcftools)
-# 6. Filtering (vcftools)
-# 7. Data analysis
+# 1. Index and quality check (FastQC)
+# 2. Mapping reads to genome (bwa-mem2)
+# 3. Variant calling (bcftools)
+# 4. Filtering (vcftools)
+# 5. Data analysis
 
 
 
 # ==================================================================================================================================================
-## 1. Download genome
+## 1. Index and quality check
 # ==================================================================================================================================================
 
-# -------------------------------------------------------------------------
-# Index genome
+# 1.1 index genome with bwa-mem2
 
-# index genome with bwa-mem2
-echo '#!/bin/bash
-#SBATCH --job-name=indexv4 
-#SBATCH --ntasks=1 
-#SBATCH --cpus-per-task=1
-#SBATCH --mem-per-cpu=50G
-#SBATCH --time=1:00:00
-#SBATCH --output=%x.o%A
-#SBATCH --error=%x.e%A
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=ellika.faust@eawag.ch
+#REF="Aanat_demux_hifi_l3.bp.p_ctg.fa.gz"
+REF="Acygnea.v3.asm.bp.p_ctg.fa.gz"
 
-source $GDCstack
-module load bwa-mem2
-bwa-mem2 index ./ref/v4.asm.bp.p_ctg.fa.gz
-'> index4.sh
+bwa-mem2 index $REF
 
-sbatch index4.sh
-#Total time taken: 1848.6002
+# 1.2 quality control with fastqc
 
-# --------  copy genomes and indexes to project ----------
+
+# fastqc quality checks
+fastqc -t 2 -o fastqc_results/ *_R1_001.fastq.gz *_R2_001.fastq.gz
+
+# make a summary report of fastqc
+
+multiqc ./fastqc_results/
 
 # ==================================================================================================================================================
-# 2. Download data
+# 2. Mapping
 # ==================================================================================================================================================
 
-# -------------------------------------------------------------------------
-# Download data from fgcz gstore with Alex Login into project folder
-#Test with single file
-wget --user weberalexandraanhthu --ask-password https://fgcz-gstore.uzh.ch/projects/p30854/o32826_NovaSeq_230928_X007/328261_05-AA05_S17_R2_001.fastq.gz
-
-#Download full folder
-wget --user weberalexandraanhthu -e robots=off --ask-password -r --no-parent -nH --cut-dirs=2 --reject="index.html*" https://fgcz-gstore.uzh.ch/projects/p30854/o32826_NovaSeq_230928_X007/
-
-
-# ==================================================================================================================================================
-# 3. Quality check
-# ==================================================================================================================================================
-
-# checking all the data can take some time so it can be good to copy over a sub-sample to the SCRATCH system and check the quality of them
-
-# -------- copy fastq.gz files to SCRATCH ----------
-
-# make a list concatenated samples
+# make a list of samples
 ls $PANA/fastqs/*_R1_001.fastq.gz | sed 's/^[^-]*-\([^-]*\)_S.*$/\1/' > sample_list
 #389 samples
 
-# only keeping samples with are not Anodonta anatina (ie cygnea and exulcerata)
+# separate A. anatina from A. cygnea and A. exulcerata
+awk -F',' '$1 == "Anodonta anatina" {print $NF}' metadata_all.csv | grep -Ff - sample_list > aa_sample_list
+# 221 samples
 awk -F',' '$1 != "Anodonta anatina" {print $NF}' metadata_all.csv | grep -Ff - sample_list > ac_ae_sample_list
 # 168 samples (159 cygnea and 17 exulcerata)
 
-# open fastqc script and adjust paths and array length
-nano fastqc.sh
 
-sbatch fastqc.sh
-
-# make a summary report of fastqc
-module load multiqc
-multiqc ./
-
-
-# --------  tar archive and copy fastqc, multiqc and log files to project ----------
-
-# ==================================================================================================================================================
-# 4. Mapping
-# ==================================================================================================================================================
-
-
-# make a sample list and copy
-ls *_R1_001.fastq.gz |sed 's/^[^-]*-\([^-]*\)_S.*$/\1/'> sample_list
-
-
-cp ${data}/*.fastq.gz
-
-# Open script and change paths and names
+# Open script and adjust paths and names
 nano map.sh
 
 # map.sh will do the following for one sample at a time (in arrays)
@@ -195,33 +64,84 @@ sbatch map.sh
 # after completed run check all log files for potential error messages and samples which did not complete
 
 # summaries flagstat and pcr de-duplication log files using multiqc
-source $GDCstack
-module load multiqc
 
 multiqc mapping_stats/stats/ -n multiqc
 multiqc mapping_stats/stats_dup/ -n multiqc_dup
 multiqc mapping_stats/statsQ20/ -n multiqc_Q20
-multiqc mapping_stats/statsQ20_dup/ -n multiqc_Q20_dup
 
 
 # ==================================================================================================================================================
-# 6. Filtering
+# 3. Variant calling
 # ==================================================================================================================================================
 
-# FILTERS:
+# prepare list of bam files
+ls bams/*bam > bam_list
+
+# listing only bams by species
+awk -F',' '$1 == "Anodonta anatina" {print $NF}' metadata_all.csv | grep -Ff - bam_list > anatina_bams
+awk -F',' '$1 != "Anodonta anatina" {print $NF}' metadata_all.csv | grep -Ff - bam_list > cygnea_exulcerata_bams
+
+# Best is to call chromosome by chromosome.
+# But if there are many scaffolds it can be better to split scaffolds according to size
+
+# A anatina genome
+REF="Aanat_demux_hifi_l3.bp.p_ctg.fa.gz"
+# A cygnea genome
+REF="Acygnea.v3.asm.bp.p_ctg.fa.gz"
+
+# make fai index
+samtools faidx $REF
+
+# prepare sorted scaffold list from index
+cut -f 1,2 ${REF/.gz/}.fai | sort -k2 -n -r > sorted_scaffolds
+
+head -n 100 sorted_scaffolds | cut -f 1 > largest_scaffolds_100
+tail -n +101 sorted_scaffolds | cut -f 1 | shuf  > smaller_scaffolds
+split -l 100 smaller_scaffolds scaffold_chunk_
+# make the names better
+counter=1
+for file in scaffold_chunk_*; do
+    mv "$file" "scaffold_chunk_${counter}"
+    ((counter++))
+done
+
+# run bcfcalls.sh with largest 100 scaffolds
+# run bcfcall_loop.sh with remaining scaffolds
+
+# bcfcalls.sh and bcfcalls_loop will do the following
+# 1. generate genotype likelihoods with bcftools mpileup
+#       skipping indels, with a max read-depth of 30
+# 2. call genotypes with bcftools call
+#       using multiallelic-caller method, only outputting variant sites
+
+# for few large scaffolds this is better
+sbatch bcfcalls.sh
+# for many small scaffolds this is better
+sbatch bcfcalls_loop.sh
+
+# after completed run check all log files for potential error messages and samples which did not complete
+
+# ==================================================================================================================================================
+# 4. Filtering
+# ==================================================================================================================================================
+
+# FILTERS
 # variant <50% missing data
 # minQ 30
-# individual with to much missing data  >0.5
+# individual with to much missing data  <0.5
 # min DP 2
 # bi-allelic
-# variant <80% missing data
-# mean DP between combined:3-13.568
-# strand bias p-value combined< 0.01
-# variant <85% missing data
-# imiss >30%
+# variant <20% missing data
+# mean DP between :3-13.568 (A. anatina)  3-8.86667 (A. cygnea)
+# mac 2
+# strand bias p-value < 0.01
+# variant <15% missing data
+# individual missing data <30%
 # mac 5
 # LD filter
 
+# Below the filters steps for A cygnea and exulcerata is displayed
+# For details on filtering used with all species and A. anatina, check publication
 
 # ----------------------------
 # ------- concat.sh ----------
@@ -232,7 +152,6 @@ module load bcftools
 module load vcftools/0.1.16-tc6l6nq
 
 VCF_FILE="ac_ae_raw.vcf.gz"
-# 51559526 SNPs
 
 # make list of bcfs to combine
 ls /SNPs/*.bcf > bcf_list
@@ -258,14 +177,13 @@ echo "All vcftools analyses are done!"
 
 
 # ----------------------------
-# ------ interactive ---------
+# ---plot missingnes and depth----
 # ----------------------------
 
-# plot missingnes and depth
 # filter site missingness, mapping quality, minimum depth, biallelic sites and remove samples with missingness above cutoff
+
 source $GDCstack
 module load r
-
 
 VCF_FILE="ac_ae_raw"
 
@@ -362,13 +280,10 @@ vcftools --gzvcf ${VCF_FILE2} --missing-site --out ${VCF_FILE2/.vcf.gz/} &
 wait
 
 
-# 38349899 SNps left 
-
-
 # ---------------------------
 
 # ----------------------------
-# ------ check output ---------
+# --plot mean depth and missingness-----
 # ----------------------------
 
 
@@ -408,8 +323,6 @@ Rscript -e 'mean (as.numeric (readLines ("stdin")))' < meandepthpersite
 awk '$1 >= 3 && $1 <= 8.86667' meandepthpersite | wc -l
 # 36285947
 
-
-
 #Let's check the missingness across the sites.
 tail +2 ${VCF_FILE/.vcf.gz/}.lmiss | cut -f6 > totalmissingsite
 # calculate 0.5 and 0.95 quantiles
@@ -440,7 +353,9 @@ awk '$1 <= 0.1' totalmissingsite | wc -l
 # ------- filt_2.sh ----------
 # ----------------------------
 
-# filter site based on missingess and mean site depth between 0.05 and 0.95 quantiles
+VCF_FILE="ac_ae_raw_miss5_Q30_DP2_bi_imiss5.vcf.gz"
+
+# filter site based on missingess and mean site depth between 3 and the upper 0.99 quantile
 vcftools --gzvcf ${VCF_FILE} --max-missing 0.8 --min-meanDP 3 --max-meanDP 8.86667 --mac 2 --recode-INFO-all --recode --stdout | gzip -c > ${VCF_FILE/.vcf.gz/_miss8_meanDP_mac2.vcf.gz} 
 # After filtering, kept 33119745 out of a possible 38349898 Sites
 
@@ -453,24 +368,20 @@ bcftools filter -e 'INFO/PV4[0]< 0.01' ${VCF_FILE/.vcf.gz/_miss8_meanDP_mac2.vcf
 
 module load vcftools
 
-VCF_FILE="aa_raw_miss5_Q30_DP2_bi_imiss5_miss8_meanDP_mac2_SB.vcf.gz"
+VCF_FILE="ac_ae_raw_miss5_Q30_DP2_bi_imiss5_miss8_meanDP_mac2_SB.vcf.gz"
 
 
 echo "Finished filtering and calculating individual stats $(date)"
 vcftools --gzvcf $VCF_FILE --depth --out $OUT_DIR/$OUT_PREFIX &
 vcftools --gzvcf $VCF_FILE --missing-indv --out $OUT_DIR/$OUT_PREFIX &
 vcftools --gzvcf $VCF_FILE --het --out $OUT_DIR/$OUT_PREFIX &
-#vcftools --gzvcf $VCF_FILE --relatedness --out $OUT_DIR/$OUT_PREFIX &
-#vcftools --gzvcf $VCF_FILE --relatedness2 --out $OUT_DIR/$OUT_PREFIX &
 
 echo "Calculating allele stats $(date)"
 vcftools --gzvcf $VCF_FILE --counts2 --out $OUT_DIR/$OUT_PREFIX &
 
 echo "Calculating site stats $(date)"
-#vcftools --gzvcf $VCF_FILE --site-depth --out $OUT_DIR/$OUT_PREFIX &
 vcftools --gzvcf $VCF_FILE --site-mean-depth --out $OUT_DIR/$OUT_PREFIX &
 vcftools --gzvcf $VCF_FILE --missing-site --out $OUT_DIR/$OUT_PREFIX &
-#vcftools --gzvcf $VCF_FILE --singletons --out $OUT_DIR/$OUT_PREFIX &
 vcftools --gzvcf $VCF_FILE --hardy --out $OUT_DIR/$OUT_PREFIX &
 
 
@@ -478,22 +389,22 @@ tail -n+2 ${VCF_FILE/.vcf.gz/.imiss} | awk -F '\t' '$5>0.3' | wc -l
 
 tail -n+2 ${VCF_FILE/.vcf.gz/.lmiss}  | awk -F '\t' '$6>0.05' | wc -l
 
-tail -n+2 ${VCF_FILE/.vcf.gz/.frq} | awk -F '\t' '$6<0.01' | wc -l
-
 tail -n+2 ${VCF_FILE/.vcf.gz/.frq.count} | awk -F '\t' '$6<5' | wc -l
 
 # ----------------------------
 # ------- Plot stats ----------
 # ----------------------------
 
+# Plotting stats
+# also useful after later filtering steps
 
 source $GDCstack
 module load r
 
 VCF_FILE="ac_ae_raw_miss5_Q30_DP2_bi_imiss5_miss8_meanDP_mac2_SB.vcf.gz"
 #VCF_FILE="ac_ae_raw_miss5_Q30_DP2_bi_imiss5_miss8_meanDP_mac2_SB_miss85_imiss3_mac5.vcf.gz"
-VCF_FILE="cygnea_mac5.vcf.gz"
-VCF_FILE="exulcerata_mac2.vcf.gz"
+
+
 awk 'NR > 1 {print $3}' ${VCF_FILE/.vcf.gz/}.ldepth.mean | \
 Rscript -e 'args <- commandArgs(trailingOnly=TRUE); 
     data <- as.numeric(readLines("stdin")); 
@@ -583,7 +494,7 @@ vcftools --gzvcf ${VCF_FILE/.vcf.gz/_miss85.vcf.gz} --remove samples_imiss3 --re
 # make 
 # - bed files
 # - smaller vcfs 
-# - species subest
+# - species subset
 
 source $GDCstack
 module load plink
@@ -591,6 +502,8 @@ module load vcftools/0.1.16-tc6l6nq
 
 VCF_FILE="ac_ae_raw_miss5_Q30_DP2_bi_imiss5_miss8_meanDP_mac2_SB_miss85_imiss3_mac5.vcf.gz"
 BED_FILE="cygnea_exulcerata"
+
+###### EXULCERATA & CYGNEA #########
 
 #  make a bed file
 plink --vcf $VCF_FILE --double-id --allow-extra-chr --set-missing-var-ids @:# --make-bed --pca --out ${OUT_DIR}/${BED_FILE}
@@ -613,7 +526,6 @@ awk -F',' '$1 == "Anodonta exulcerata" {print $NF "\t" $NF}' metadata_all.csv  >
 plink --bfile ${OUT_DIR}/$BED_FILE --allow-extra-chr --keep exulcerata_samples --make-bed --pca --out ${OUT_DIR}/exulcerata 
 plink --bfile ${OUT_DIR}/$BED_FILE --allow-extra-chr --keep exulcerata_samples --mac 2 --make-bed --pca --recode vcf-iid  --out ${OUT_DIR}/exulcerata_mac2 
 
-###### EXULCERATA & CYGNEA #########
 
 
 # ----------------------------
@@ -650,44 +562,23 @@ BED_FILE="exulcerata_mac2"
 plink --bfile $BED_FILE --double-id --allow-extra-chr --set-missing-var-ids @:# --exclude snp2rm --make-bed --pca --out ${BED_FILE}_ld
 
 
-
-
-
-
-
-
-
 # ==================================================================================================================================================
-# 7. Analysis
+# 5. Analysis
 # ==================================================================================================================================================
-
-
 
 # 0. Quality (LD decay, allele frequency)
 # 1. Population structure (PCA, admixture, Fst, RAxML)
-# 2. Genetic diversity (dxy, pi, Ho, He, Polymorphic sites)
-# 3. Inbreeding (FIS, ROH, genetic load)
+# 2. Genetic diversity (pi, Ho, He)
+# 3. Inbreeding (FIS, ROH)
 # 4. Effective population size (currentNe)
 
 
-
-# Eg of how to chain jobs
-JOBID1=$(sbatch admix.sh cygnea_exulcerata_ld | awk '{print $4}')
-JOBID2=$(sbatch --dependency=afterany:$JOBID1 admix.sh cygnea_mac5_ld | awk '{print $4}')
-JOBID3=$(sbatch --dependency=afterany:$JOBID2 admix.sh | awk '{print $4}')
-JOBID4=$(sbatch --dependency=afterany:$JOBID3 admix.sh | awk '{print $4}')
-# Other Dependency Types
-# afterok: Job starts if the specified job completes successfully.
-# afterany: Job starts after the specified job finishes, regardless of exit status.
-# afternotok: Job starts if the specified job fails.
-# singleton: Ensures only one instance of a job with the same name runs at a time.
-
 # ==================================================================================================================================================
-# Quality
+# 5.0 Quality
 # ==================================================================================================================================================
 
 # ----------------------------
-# ------------AF-------------- DONE
+# ------------AF-------------- 
 # ----------------------------
 out="afreq"
 if [ ! -e ${out} ]  ; then mkdir ${out} ; fi
@@ -705,7 +596,7 @@ BED_FILE="exulcerata_mac2"
 plink2 --bfile $BED_FILE --allow-extra-chr --freq --out ${out}/$BED_FILE
 
 # ----------------------------
-# --------LD decay------------ DONE
+# --------LD decay------------ 
 # ----------------------------
 
 out="ld"
@@ -736,7 +627,7 @@ awk 'NR==1{print; next} rand() <= 500000000/NR' ${BED_FILE}_maf_thin_ld_with_dis
 
 
 # ----------------------------
-# ----Allele DP + Het frequency----- DONE
+# ----Allele DP + Het frequency----- 
 # ----------------------------
 
 source $GDCstack
@@ -748,7 +639,7 @@ tabix -p vcf ${VCF_FILE}.vcf.gz
 bcftools view -H ${VCF_FILE}.vcf.gz | shuf -n 50000000 | cut -f1,2 > ${VCF_FILE}_5Msnsp.txt &
 
 
-# can be necessary if the metadala_all was made in excel
+# to make sure metadala_all.csv has the right format
 dos2uniz metadata_all.csv
 
 awk -F',' '$1 == "Anodonta cygnea" && $9 == "passed" {print $NF}' metadata_all.csv > cygnea_samples
@@ -851,12 +742,12 @@ BEGIN {
 
 
 # ==================================================================================================================================================
-# 1 Population structure 
+# 5.1 Population structure 
 # ==================================================================================================================================================
 
 
 # ----------------------------
-# ------------PCA------------- DONE
+# ------------PCA------------- 
 # ----------------------------
 out="pca"
 if [ ! -e ${out} ]  ; then mkdir ${out} ; fi
@@ -884,7 +775,7 @@ done < ${out}/${BED_FILE}.eigenval > ${out}/${BED_FILE}.pve
 plink --bfile $BED_FILE --allow-extra-chr --missing --out ${out}/$BED_FILE 
 
 # ----------------------------
-# ---------ADMIXTURE---------- DONE
+# ---------ADMIXTURE---------- 
 # ----------------------------
 
 source $GDCstack
@@ -929,7 +820,7 @@ awk ' /CV/ {print $3,$4}' *${BED_FILE}*out | sed -e 's/(K=//;s/)://' | sort -n -
 
 
 # ----------------------------
-# ---------    FST  ---------- DONE
+# ---------    FST  ---------- 
 # ----------------------------
 
 out="fst"
@@ -963,7 +854,7 @@ plink2 --bfile ${BED_FILE} --double-id --allow-extra-chr --pheno pheno_5 --fst P
 
 
 # ----------------------------
-# ---------RAxML---------- DONE
+# ---------  RAxML  ---------- 
 # ----------------------------
 
 # https://github.com/amkozlov/raxml-ng/wiki/Tutorial 
@@ -1012,7 +903,7 @@ raxml-ng --msa T2.raxml.rba --model GTR+ASC_LEWIS --prefix T3 --threads 22 --see
 
 
 # ----------------------------
-# --------- IBS/Hamming  ----------
+# ------- Distance ----------
 # ----------------------------
 
 
@@ -1026,18 +917,12 @@ module load plink
 plink --bfile $BED_FILE --allow-extra-chr   --distance square --out ${BED_FILE}
 
 # ==================================================================================================================================================
-# 2. Diversity
+# 5.2 Diversity
 # ==================================================================================================================================================
 
 
-# ----------------------------
-# ------------dxy------------- SKIP
-# ----------------------------
-
-
-
 # --------------------------------
-# ---nucleotide diversity -------- DONE
+# ----- nucleotide diversity -------- 
 # --------------------------------
 # pi.sh
 
@@ -1083,7 +968,7 @@ done < pops_AC_AE
 
 
 # ----------------------------
-# -----------Het-------------- DONE
+# -----------Het-------------- 
 # ----------------------------
 
 # fis.sh
@@ -1093,7 +978,7 @@ done < pops_AC_AE
 
 
 # ==================================================================================================================================================
-# 3. Inbreeding
+# 5.3 Inbreeding
 # ==================================================================================================================================================
 
 
@@ -1139,7 +1024,7 @@ done < pops_AC_AE
 
 
 # ----------------------------
-# ----------- ROH ------------ DONE
+# ----------- ROH ------------ 
 # ----------------------------
 
 out="roh"
@@ -1169,7 +1054,7 @@ bcftools roh --GTs-only 30 --AF-tag AF ${VCF_FILE/.vcf/}_AF.vcf.gz --output-type
 
 
 # ----------------------------
-# -------relatedness --------- DONE
+# -------relatedness --------- 
 # ----------------------------
 out="kinship"
 if [ ! -e ${out} ]  ; then mkdir ${out} ; fi
@@ -1196,11 +1081,11 @@ done
 
 
 # ==================================================================================================================================================
-# 4. Effective population size
+# 5.4 Effective population size
 # ==================================================================================================================================================
 
 # ----------------------------
-# -------- currentNe --------- DONE
+# -------- currentNe ---------
 # ----------------------------
 
 
@@ -1266,130 +1151,7 @@ for group in $(< pops_10_AC); do
     echo "$group $ne CI:${CI_10}-${CI_90}"
 done
 
-# AC_ETD 6.24 CI:5.01-7.89
-# AC_ETR 4.00 CI:5.01-5.01
-# AC_ROT 21.52 CI:16.61-27.88
-# AC_SAM 4.00 CI:5.01-5.01
-# AC_UFS 23.66 CI:19.52-28.69
-# AC_VIL 4.00 CI:5.01-5.01
-# AE_AGN 7.41 CI:6.43-8.54
-
 
 # ==================================================================================================================================================
-# TEST ZONE
+# THE END
 # ==================================================================================================================================================
-
-source $GDCstack
-module load bcftools
-
-VCF_FILE=ac_ae_raw_miss5_Q30_DP2_bi_imiss5_miss8_meanDP_mac2_SB_miss85_imiss3_mac5
-tabix -p vcf ${VCF_FILE}.vcf.gz
-# subset vcf file
-bcftools view -H ${VCF_FILE}.vcf.gz | shuf -n 50000000 | cut -f1,2 > ${VCF_FILE}_5Msnsp.txt &
-
-
-# can be necessary if the metadala_all was made in excel
-dos2uniz metadata_all.csv
-
-awk -F',' '$1 == "Anodonta cygnea" && $9 == "passed" {print $NF}' metadata_all.csv > cygnea_samples
-
-grep -vE "AC83|AC90" cygnea_samples > cygnea_samples_exc_hy
-
-awk -F',' '$1 == "Anodonta exulcerata"&& $9 == "passed" {print $NF}' metadata_all.csv  > exulcerata_samples
-
-
-
-bcftools query -S exulcerata_samples -T ${VCF_FILE}_5Msnsp.txt  -f '%CHROM:%POS\t[%GT:%AD;]\n' ${VCF_FILE}.vcf.gz > ae_allele_depth.txt
-bcftools query -S cygnea_samples_exc_hy -T ${VCF_FILE}_5Msnsp.txt  -f '%CHROM:%POS\t[%GT:%AD;]\n' ${VCF_FILE}.vcf.gz > ac_allele_depth.txt
-
-
-
-awk '
-BEGIN {
-    print "SNP\tn_01\tDP_0\tDP_1\tn_total"
-}
-{
-    split($2, samples, ";");
-    sum_01 = 0;
-    count_01 = 0;
-    sum_01_allele1 = 0;
-    sum_01_allele0 = 0;
-    n_total = 0;
-    
-    for (i in samples) {
-        split(samples[i], info, ":");
-        genotype = info[1];
-        allele_depth = info[2];
-        split(allele_depth, depths, ",");
-        depth_0 = depths[1];  # Depth for allele 0
-        depth_1 = depths[2];  # Depth for allele 1
-
-        # Count all genotyped individuals (exclude missing "./.")
-        if (genotype != "./.") {
-            n_total++;
-        }
-
-        # Count heterozygotes (0/1)
-        if (genotype == "0/1") {
-            sum_01_allele0 += depth_0;
-            sum_01_allele1 += depth_1;
-            count_01++;
-        }
-    }
-
-    # Print results for each SNP
-    print $1 "\t" count_01 "\t" sum_01_allele0 "\t" sum_01_allele1 "\t" n_total;
-}' ac_allele_depth.txt > ac_ad.txt
-
-
-
-awk '
-BEGIN {
-    print "SNP\tn_01\tDP_0\tDP_1\tn_total"
-}
-{
-    split($2, samples, ";");
-    sum_01 = 0;
-    count_01 = 0;
-    sum_01_allele1 = 0;
-    sum_01_allele0 = 0;
-    n_total = 0;
-    
-    for (i in samples) {
-        split(samples[i], info, ":");
-        genotype = info[1];
-        allele_depth = info[2];
-        split(allele_depth, depths, ",");
-        depth_0 = depths[1];  # Depth for allele 0
-        depth_1 = depths[2];  # Depth for allele 1
-
-        # Count all genotyped individuals (exclude missing "./.")
-        if (genotype != "./.") {
-            n_total++;
-        }
-
-        # Count heterozygotes (0/1)
-        if (genotype == "0/1") {
-            sum_01_allele0 += depth_0;
-            sum_01_allele1 += depth_1;
-            count_01++;
-        }
-    }
-
-    # Print results for each SNP
-    print $1 "\t" count_01 "\t" sum_01_allele0 "\t" sum_01_allele1 "\t" n_total;
-}' ae_allele_depth.txt > ae_ad.txt
-
-
-
-
-
-# heterozygosity per genotype aa ab bb
-# allele depth difference in heterozygots
-# anatina - raxml
-# cygnea exulcerata -r raxml
-
-
-
-
-

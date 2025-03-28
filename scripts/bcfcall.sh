@@ -7,8 +7,6 @@
 #SBATCH --time=24:00:00
 #SBATCH --output=logs/%x.o%A_%a
 #SBATCH --error=logs/%x.e%A_%a
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=ellika.faust@eawag.ch
 
 
 
@@ -16,7 +14,7 @@
 echo "starting ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} at $(date)"
 ##################################################################################################################################################################################################
 
-source /cluster/project/gdc/shared/stack/GDCstack.sh
+source $GDCstack
 module load bcftools
 
 out=SNPs

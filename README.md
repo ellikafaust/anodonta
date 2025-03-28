@@ -9,9 +9,7 @@ This repository contains the code and analysis pipelines associated with the stu
 - `README.md` – This file, providing an overview of the repository.
 - `Rmarkdowns/` – Contains RMarkdown files used for data analysis and visualization.
 - `scripts/` – Directory with various helper scripts for processing and analysis.
-- `anatina_wgs_pipeline.sh` – Whole genome sequencing (WGS) pipeline for *Anodonta anatina* and *Anodonta sp.*.
-- `cygnea_wgs_pipeline.sh` – WGS pipeline for *Anodonta cygnea* and *Anodonta cygnea*.
-- `all_species_wgs_pipeline.sh` – WGS pipeline for combied analysis of all four species
+- `wgs_pipeline.txt` – Whole genome sequencing (WGS) pipeline
 
 ## Description
 

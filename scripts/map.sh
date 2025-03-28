@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=mapv3  
+#SBATCH --job-name=map 
 #SBATCH --array=1-168%11
 #SBATCH --ntasks=1 
 #SBATCH --cpus-per-task=4
@@ -8,8 +8,6 @@
 #SBATCH --tmp=40G
 #SBATCH --output=%x.o%A_%a
 #SBATCH --error=%x.e%A_%a
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=ellika.faust@eawag.ch
 
 ##################################################################################################################################################################################################
 echo "Starting ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} at $(date)"
@@ -18,17 +16,17 @@ echo "Starting ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} at $(date)"
 # make a list concatenated samples
 #ls $PANA/fastqs/*_R1_001.fastq.gz | sed 's/^[^-]*-\([^-]*\)_S.*$/\1/' > sample_list
 #389 samples
-# only keeping samples with are not Anodonta anatina (ie cygnea and exulcerata)
+# only keeping samples which are not Anodonta anatina (ie cygnea and exulcerata)
 #awk -F',' '$1 != "Anodonta anatina" {print $NF}' groups_aa.csv | sed 's/^[^-]*-\([^-]*\)_S.*$/\1/' | grep -Ff - sample_list > ac_ae_sample_list
 
 
 #####Definition of the paths:
 data=${PANA}/fastqs # where the fastq files are kept
-ref=${SCRATCH}/mapping/ref/v3.asm.bp.p_ctg.fa.gz # the reference genome
+ref=${SCRATCH}/mapping/ref/Acygnea.v3.asm.bp.p_ctg.fa.gz # the reference genome
 out=${SCRATCH}/mapping/mapping_stats # where to put the mapping statistics
 proj=${PANA}/bams_cygnea # final destination of the bams
 bams=${SCRATCH}/bams_cygnea # temporary location for bams in the scratch for later use for snp-calling
-sample_list=${SCRATCH}/mapping/ac_ae_sample_list
+sample_list=${SCRATCH}/mapping/ac_ae_sample_list # sample list
 
 ##Number_processors per Job, hyper-threading activated request 2 but provide BWA 4 CPUs
 cpu=4
@@ -37,11 +35,12 @@ mem=5GB
 ##Mapping Quality
 Qual=20
 
-# use old softwares tack
+# load softwares
 source $GDCstack
 module load gcc 
 module load bwa-mem2
 module load sambamba
+module load picard
 
 # how to reference each sample by array number
 IDX=$SLURM_ARRAY_TASK_ID
@@ -60,6 +59,7 @@ mv ${TMPDIR}/*-${name}_*R2*.fastq.gz ${TMPDIR}/${name}_R2.fq.gz
 if [ ! -e ${out} ]  ; then mkdir ${out} ; fi
 if [ ! -e ${out}/stats ]  ; then mkdir ${out}/stats ; fi
 if [ ! -e ${out}/statsQ${Qual} ]  ; then mkdir ${out}/statsQ${Qual} ; fi
+if [ ! -e ${out}/stats_dup ]  ; then mkdir ${out}/stats_dup ; fi
 
 # create folders for bams
 if [ ! -e ${proj} ]  ; then mkdir ${proj} ; fi
@@ -90,17 +90,38 @@ sambamba view  -F "mapping_quality >= "${Qual} ${TMPDIR}/${name}_sort.bam -o ${b
 # remove unfiltered bams
 rm ${TMPDIR}/${name}_sort.bam 
 
-# index bam
-sambamba index -t ${cpu} ${bams}/${name}_sort_Q${Qual}.bam
+# mark and remove pcr duplicates
+echo "Remove PCR duplicates"
 
-# mapping statistics after quality filter
-sambamba flagstat -t ${cpu} ${bams}/${name}_sort_Q${Qual}.bam > ${out}/statsQ${Qual}/${name}_Q20_flagstat
+# Some cluster environments provide a picard wrapper script instead of using Java directly. 
+# Unfortunately, this wrapper does not accept -Xmx options directly. 
+#If your system uses this, you may need to set the memory limit with an environment variable before running Picard:
+export _JAVA_OPTIONS="-Xmx5G"
+
+picard MarkDuplicates \
+	-TMP_DIR ${TMPDIR} \
+	-INPUT ${bams}/${name}_sort_Q${Qual}.bam \
+	-OUTPUT ${bams}/${name}_sort_Q${Qual}_nodup.bam \
+	-METRICS_FILE ${out}/stats_dup/${name}_nodup \
+	-VALIDATION_STRINGENCY LENIENT \
+	-MAX_FILE_HANDLES_FOR_READ_ENDS_MAP 512 \
+	-REMOVE_DUPLICATES true
+
+# remove bam pre-deduplication
+rm ${bams}/${name}_sort_Q${Qual}.bam*
+
+# index bam
+sambamba index -t ${cpu} ${bams}/${name}_sort_Q${Qual}_nodup.bam
+
+# mapping statistics after removing pcr duplicates
+sambamba flagstat -t ${cpu} ${bams}/${name}_sort_Q${Qual}_nodup.bam > ${out}/statsQ${Qual}_dup/${name}nodup_Q20_flagstat
 
 # copy bam and bai to project folder
-cp ${bams}/${name}_sort_Q${Qual}.bam* ${proj}/
+cp ${bams}/${name}_sort_Q${Qual}_nodup.bam* ${proj}/
 
 # remove from scratch (if you are not doing snp-calling straight away)
 #rm ${bams}/${name}_sort_Q${Qual}.bam*
+
 
 ##################################################################################################################################################################################################
 ####job controlling, grep "Job:" *.out

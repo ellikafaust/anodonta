@@ -6,23 +6,19 @@
 #SBATCH --time=4:00:00
 #SBATCH --output=logs/%x.o%A
 #SBATCH --error=logs/%x.e%A
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=ellika.faust@eawag.ch
 
 
 ##################################################################################################################################################################################################
 echo "starting ${SLURM_JOB_ID} at $(date)"
 ##################################################################################################################################################################################################
 
+VCF_FILE="ac_ae_raw_miss5_Q30_DP2_bi_imiss5.vcf.gz"
+echo "Processing file: $VCF_FILE"
 
 source $GDCstack
 module load vcftools/0.1.16-tc6l6nq
 module load bcftools
 
-
-# stats
-VCF_FILE="ac_ae_raw_miss5_Q30_DP2_bi_imiss5.vcf.gz"
-# calculate missingness per individual
 
 # filter site based on missingess and mean site depth between 0.05 and 0.95 quantiles
 vcftools --gzvcf ${VCF_FILE} --max-missing 0.8 --min-meanDP 3 --max-meanDP 8.86667 --mac 2 --recode-INFO-all --recode --stdout | gzip -c > ${VCF_FILE/.vcf.gz/_miss8_meanDP_mac2.vcf.gz} 

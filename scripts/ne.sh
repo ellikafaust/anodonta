@@ -7,8 +7,6 @@
 #SBATCH --time=12:00:00
 #SBATCH --output=logs/%x.o%A_%a
 #SBATCH --error=logs/%x.e%A_%a
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=ellika.faust@eawag.ch
 
 
 ############################################################################################################################$

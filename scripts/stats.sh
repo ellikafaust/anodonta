@@ -4,10 +4,8 @@
 #SBATCH --cpus-per-task=7
 #SBATCH --mem-per-cpu=4G
 #SBATCH --time=24:00:00
-#SBATCH --output=logs/stats.o%A
-#SBATCH --error=logs/stats.e%A
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=ellika.faust@eawag.ch
+#SBATCH --output=logs/%x.o%A
+#SBATCH --error=logs/%x.e%A
 
 
 ##################################################################################################################################################################################################

@@ -6,15 +6,13 @@
 #SBATCH --time=40:00:00
 #SBATCH --output=logs/%x.o%A
 #SBATCH --error=logs/%x.e%A
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=ellika.faust@eawag.ch
 
 
 ##################################################################################################################################################################################################
 echo "starting ${SLURM_JOB_ID} at $(date)"
 ##################################################################################################################################################################################################
 
-source /cluster/project/gdc/shared/stack/GDCstack.sh
+source $GDCstack
 module load bcftools
 module load vcftools/0.1.16-tc6l6nq
 

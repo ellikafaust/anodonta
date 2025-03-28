@@ -6,33 +6,23 @@
 #SBATCH --time=12:00:00
 #SBATCH --output=logs/%x.o%A
 #SBATCH --error=logs/%x.e%A
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=ellika.faust@eawag.ch
+
 
 
 ##################################################################################################################################################################################################
 echo "starting ${SLURM_JOB_ID} at $(date)"
 ##################################################################################################################################################################################################
 
-# file need to be provided when submitting the job
-# eg: sbatch my_script.sh my_input.vcf.gz
+VCF_FILE="ac_ae_raw_miss5_Q30_DP2_bi_imiss5_miss8_meanDP_mac2_SB.vcf.gz"
 
-# Check if a file is provided
-if [ -z "$1" ]; then
-    echo "Usage: sbatch my_script.sh <input_file>"
-    exit 1
-fi
-
-INPUT_FILE=$1
-
-echo "Processing file: $INPUT_FILE"
+echo "Processing file: $VCF_FILE"
 
 
 source $GDCstack
 module load vcftools/0.1.16-tc6l6nq
 module load bcftools
 
-VCF_FILE=$INPUT_FILE
+
 
 # filter for missingness
 vcftools --gzvcf ${VCF_FILE} --max-missing 0.85 --recode-INFO-all --recode --stdout | gzip -c > ${VCF_FILE/.vcf.gz/_miss85.vcf.gz} 

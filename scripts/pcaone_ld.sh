@@ -6,8 +6,6 @@
 #SBATCH --time=24:00:00
 #SBATCH --output=%x.o%A
 #SBATCH --error=%x.e%A
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=ellika.faust@eawag.ch
 
 ###############################################################################################################################################$
 echo "Starting ${SLURM_ARRAY_TASK_ID} at $(date)"

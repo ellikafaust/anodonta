@@ -5,10 +5,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem-per-cpu=3G
 #SBATCH --time=10:00:00
-#SBATCH --output=admix.o%A_%a
-#SBATCH --error=admix.e%A_%a
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=ellika.faust@eawag.ch
+#SBATCH --output=%x.o%A_%a
+#SBATCH --error=%x.e%A_%a
 
 echo "starting ${SLURM_JOB_ID} at $(date)"
 ##################################################################################################################################################################################################
