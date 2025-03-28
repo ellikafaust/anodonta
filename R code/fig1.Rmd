@@ -130,7 +130,7 @@ river_geo <- rbind(river1_geo,river2_geo,river3_geo,river4_geo,river5_geo)
 
 ```{r}
 
-# Rhine, Aare, Resu and Limat visable
+# Rhine, Aare, Reuss and Limmat visable
 basin_col <- c("#490961FF","#161613FF","#82BBAAFF","#4091D5FF","#E46D00FF","#BFAD7AFF","#B24531FF","grey","grey")
 
 
@@ -205,14 +205,6 @@ pie_plots <- lapply(unique(pie_data$pop_code), function(p) {
     scale_fill_manual(values =  c("#0C59FE","#FFD700","#228B22","#DC143C"))
 })
 
-# some other options
-"#00CED1"
-
-"#FFA500" 
-
-"#FF8C00" # (Dark Orange) – warm, energetic, and balances red/green without clashing
-"#FFD700" # (Gold) – already in your palette and works beautifully
-"#8B4513"  # (Saddle Brown) – earthy and deep, grounding the colors
 ```
 
 

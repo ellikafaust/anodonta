@@ -1,0 +1,422 @@
+﻿species,species_code,order,location,pop_code,canton,catchment,seq_name,filtering,sample
+Anodonta anatina,AA,21,Scherz,SCZ,AG,Aare,328261_01-AA01_S3,passed,AA01
+Anodonta anatina,AA,21,Scherz,SCZ,AG,Aare,328261_02-AA02_S19,passed,AA02
+Anodonta anatina,AA,21,Scherz,SCZ,AG,Aare,328261_03-AA03_S5,passed,AA03
+Anodonta anatina,AA,21,Scherz,SCZ,AG,Aare,328261_04-AA04_S1,passed,AA04
+Anodonta anatina,AA,21,Scherz,SCZ,AG,Aare,334691_01-AA05_S98,passed,AA05
+Anodonta anatina,AA,21,Scherz,SCZ,AG,Aare,328261_06-AA07_S10,passed,AA07
+Anodonta anatina,AA,21,Scherz,SCZ,AG,Aare,328261_07-AA08_S16,passed,AA08
+Anodonta anatina,AA,21,Scherz,SCZ,AG,Aare,328261_08-AA09_S18,passed,AA09
+Anodonta anatina,AA,21,Scherz,SCZ,AG,Aare,328261_09-AA10_S8,passed,AA10
+Anodonta anatina,AA,21,Scherz,SCZ,AG,Aare,328261_10-AA11_S24,passed,AA11
+Anodonta anatina,AA,26,Burtignière,BUR,VD,Aare,334691_02-AA12_S15,passed,AA12
+Anodonta anatina,AA,26,Burtignière,BUR,VD,Aare,334691_03-AA13_S44,passed,AA13
+Anodonta anatina,AA,26,Burtignière,BUR,VD,Aare,334691_04-AA14_S216,passed,AA14
+Anodonta anatina,AA,26,Burtignière,BUR,VD,Aare,334691_05-AA15_S165,passed,AA15
+Anodonta anatina,AA,26,Burtignière,BUR,VD,Aare,334691_06-AA16_S362,passed,AA16
+Anodonta anatina,AA,26,Burtignière,BUR,VD,Aare,334691_07-AA17_S194,passed,AA17
+Anodonta anatina,AA,26,Burtignière,BUR,VD,Aare,334691_08-AA18_S58,passed,AA18
+Anodonta anatina,AA,26,Burtignière,BUR,VD,Aare,334691_09-AA19_S210,passed,AA19
+Anodonta anatina,AA,26,Burtignière,BUR,VD,Aare,334691_10-AA20_S372,passed,AA20
+Anodonta anatina,AA,26,Burtignière,BUR,VD,Aare,334691_11-AA21_S271,passed,AA21
+Anodonta anatina,AA,26,Burtignière,BUR,VD,Aare,334691_12-AA22_S220,passed,AA22
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_24-AA23_S40,passed,AA23
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_25-AA24_S360,passed,AA24
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_26-AA25_S304,passed,AA25
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_27-AA26_S112,passed,AA26
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_29-AA28_S392,passed,AA28
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_30-AA29_S184,passed,AA29
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_31-AA30_S260,passed,AA30
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_32-AA31_S226,passed,AA31
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_33-AA32_S305,passed,AA32
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_34-AA33_S211,passed,AA33
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_35-AA34_S174,passed,AA34
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_36-AA35_S122,passed,AA35
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_37-AA36_S375,passed,AA36
+Anodonta cygnea,AC,20,Villnachern,VIL,AG,Aare,334696_38-AA37_S78,passed,AA37
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_13-AA38_S146,passed,AA38
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_14-AA39_S307,passed,AA39
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_15-AA40_S123,passed,AA40
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_16-AA41_S203,passed,AA41
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_17-AA42_S213,passed,AA42
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_18-AA43_S228,passed,AA43
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_19-AA44_S273,passed,AA44
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_20-AA45_S215,passed,AA45
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_21-AA46_S295,passed,AA46
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_22-AA47_S158,passed,AA47
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_23-AA48_S232,passed,AA48
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_24-AA49_S214,passed,AA49
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_25-AA50_S35,passed,AA50
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_26-AA51_S32,passed,AA51
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_27-AA52_S56,passed,AA52
+Anodonta anatina,AA,24,Brümeliweiher,BRU,BE,Aare,334691_28-AA53_S390,passed,AA53
+Anodonta anatina,AA,5,Bildweiher,BIL,SG,Rhein,334691_29-AA54_S186,passed,AA54
+Anodonta anatina,AA,5,Bildweiher,BIL,SG,Rhein,334691_30-AA55_S394,passed,AA55
+Anodonta anatina,AA,5,Bildweiher,BIL,SG,Rhein,334691_31-AA56_S30,passed,AA56
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_32-AA57_S141,failed,AA57
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334696_04-AA58_S381,failed,AA58
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_33-AA59_S363,passed,AA59
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_34-AA60_S349,passed,AA60
+Anodonta cygnea,AC,8,Türlersee,TUR,ZH,Limmat,334696_39-AA61_S233,passed,AA61
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_35-AA62_S183,passed,AA62
+Anodonta cygnea,AC,8,Türlersee,TUR,ZH,Limmat,334696_40-AA63_S5,passed,AA63
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_36-AA64_S335,passed,AA64
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_37-AA65_S262,passed,AA65
+Anodonta cygnea,AC,8,Türlersee,TUR,ZH,Limmat,334696_41-AA66_S139,passed,AA66
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_38-AA67_S315,passed,AA67
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_39-AA68_S365,passed,AA68
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_40-AA69_S379,passed,AA69
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_41-AA70_S333,passed,AA70
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_42-AA71_S231,passed,AA71
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_43-AA72_S254,passed,AA72
+Anodonta cygnea,AC,8,Türlersee,TUR,ZH,Limmat,334696_42-AA73_S38,passed,AA73
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_44-AA74_S177,passed,AA74
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_45-AA75_S200,passed,AA75
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_46-AA76_S247,passed,AA76
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_47-AA77_S297,passed,AA77
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334691_48-AA78_S101,passed,AA78
+Anodonta anatina,AA,8,Türlersee,TUR,ZH,Limmat,334696_05-AA79_S36,failed,AA79
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334691_49-AA96_S42,passed,AA96
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334691_50-AA97_S272,passed,AA97
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_01-AA98_S283,passed,AA98
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_02-AA99_S130,passed,AA99
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_03-AB01_S10,passed,AB01
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_04-AB02_S399,passed,AB02
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_05-AB03_S87,passed,AB03
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_06-AB04_S261,failed,AB04
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_07-AB05_S334,passed,AB05
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_08-AB06_S166,passed,AB06
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_09-AB07_S77,passed,AB07
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_10-AB08_S223,passed,AB08
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_11-AB09_S386,passed,AB09
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_12-AB10_S289,passed,AB10
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_13-AB11_S24,passed,AB11
+Anodonta anatina,AA,15,Ägerisee,AGE,ZG,Reuss,334692_14-AB12_S80,passed,AB12
+Anodonta cygnea,AC,22,Baldeggersee,BAL,LU,Aare,334696_43-AB13_S284,passed,AB13
+Anodonta cygnea,AC,22,Baldeggersee,BAL,LU,Aare,334696_44-AB14_S269,passed,AB14
+Anodonta cygnea,AC,22,Baldeggersee,BAL,LU,Aare,334696_45-AB15_S398,passed,AB15
+Anodonta cygnea,AC,22,Baldeggersee,BAL,LU,Aare,334696_46-AB16_S2,passed,AB16
+Anodonta anatina,AA,22,Baldeggersee,BAL,LU,Aare,334692_15-AB17_S222,passed,AB17
+Anodonta anatina,AA,22,Baldeggersee,BAL,LU,Aare,334692_16-AB18_S94,passed,AB18
+Anodonta cygnea,AC,22,Baldeggersee,BAL,LU,Aare,334696_47-AB19_S376,passed,AB19
+Anodonta cygnea,AC,22,Baldeggersee,BAL,LU,Aare,334696_48-AB20_S332,passed,AB20
+Anodonta cygnea,AC,22,Baldeggersee,BAL,LU,Aare,334696_49-AB21_S18,passed,AB21
+Anodonta cygnea,AC,22,Baldeggersee,BAL,LU,Aare,334696_50-AB22_S301,passed,AB22
+Anodonta anatina,AA,10,Lachen,LAC,SZ,Limmat,334692_17-AB23_S74,passed,AB23
+Anodonta anatina,AA,10,Lachen,LAC,SZ,Limmat,334692_18-AB24_S84,passed,AB24
+Anodonta anatina,AA,10,Lachen,LAC,SZ,Limmat,334692_19-AB25_S68,passed,AB25
+Anodonta anatina,AA,10,Lachen,LAC,SZ,Limmat,334692_20-AB26_S37,passed,AB26
+Anodonta anatina,AA,10,Lachen,LAC,SZ,Limmat,334692_21-AB27_S107,passed,AB27
+Anodonta anatina,AA,10,Lachen,LAC,SZ,Limmat,334692_22-AB28_S299,passed,AB28
+Anodonta anatina,AA,10,Lachen,LAC,SZ,Limmat,334692_23-AB29_S281,passed,AB29
+Anodonta anatina,AA,10,Lachen,LAC,SZ,Limmat,334692_24-AB30_S163,passed,AB30
+Anodonta anatina,AA,10,Lachen,LAC,SZ,Limmat,334692_25-AB31_S47,passed,AB31
+Anodonta anatina,AA,10,Lachen,LAC,SZ,Limmat,334692_26-AB32_S338,passed,AB32
+Anodonta anatina,AA,11,Schmerikon,SCN,SG,Limmat,334692_27-AB33_S95,passed,AB33
+Anodonta anatina,AA,11,Schmerikon,SCN,SG,Limmat,328261_11-AB34_S7,passed,AB34
+Anodonta anatina,AA,11,Schmerikon,SCN,SG,Limmat,334692_28-AB35_S242,passed,AB35
+Anodonta anatina,AA,11,Schmerikon,SCN,SG,Limmat,334692_29-AB36_S351,passed,AB36
+Anodonta anatina,AA,11,Schmerikon,SCN,SG,Limmat,334692_30-AB37_S350,passed,AB37
+Anodonta anatina,AA,11,Schmerikon,SCN,SG,Limmat,328261_12-AB38_S4,passed,AB38
+Anodonta anatina,AA,11,Schmerikon,SCN,SG,Limmat,334692_31-AB39_S27,passed,AB39
+Anodonta anatina,AA,11,Schmerikon,SCN,SG,Limmat,334692_32-AB40_S246,passed,AB40
+Anodonta anatina,AA,11,Schmerikon,SCN,SG,Limmat,334692_33-AB41_S6,passed,AB41
+Anodonta anatina,AA,11,Schmerikon,SCN,SG,Limmat,334692_34-AB42_S64,passed,AB42
+Anodonta anatina,AA,11,Schmerikon,SCN,SG,Limmat,334692_35-AB43_S370,passed,AB43
+Anodonta anatina,AA,11,Schmerikon,SCN,SG,Limmat,334692_36-AB44_S26,passed,AB44
+Anodonta cygnea,AC,19,Sarnersee,SAM,OW,Reuss,334695_26-AB46_S218,passed,AB46
+Anodonta cygnea,AC,19,Sarnersee,SAM,OW,Reuss,334695_27-AB47_S206,passed,AB47
+Anodonta cygnea,AC,19,Sarnersee,SAM,OW,Reuss,334695_28-AB48_S267,passed,AB48
+Anodonta anatina,AA,19,Sarnersee,SAM,OW,Reuss,334692_37-AB49_S389,passed,AB49
+Anodonta cygnea,AC,19,Sarnersee,SAM,OW,Reuss,334695_29-AB50_S124,passed,AB50
+Anodonta cygnea,AC,19,Sarnersee,SAM,OW,Reuss,334695_30-AB51_S371,passed,AB51
+Anodonta cygnea,AC,19,Sarnersee,SAM,OW,Reuss,334695_31-AB52_S343,passed,AB52
+Anodonta cygnea,AC,19,Sarnersee,SAM,OW,Reuss,334695_32-AB53_S323,passed,AB53
+Anodonta cygnea,AC,19,Sarnersee,SAM,OW,Reuss,334695_33-AB54_S131,passed,AB54
+Anodonta cygnea,AC,19,Sarnersee,SAM,OW,Reuss,334695_34-AB55_S54,passed,AB55
+Anodonta cygnea,AC,19,Sarnersee,SAM,OW,Reuss,334695_35-AB56_S266,passed,AB56
+Anodonta cygnea,AC,17,Rotsee,ROT,LU,Reuss,334695_36-AB61_S293,passed,AB61
+Anodonta cygnea,AC,17,Rotsee,ROT,LU,Reuss,334695_37-AB62_S157,passed,AB62
+Anodonta cygnea,AC,17,Rotsee,ROT,LU,Reuss,334695_38-AB63_S296,passed,AB63
+Anodonta anatina,AA,17,Rotsee,ROT,LU,Reuss,334692_38-AB64_S103,passed,AB64
+Anodonta cygnea,AC,17,Rotsee,ROT,LU,Reuss,334695_39-AB65_S189,passed,AB65
+Anodonta cygnea,AC,17,Rotsee,ROT,LU,Reuss,334695_40-AB66_S14,passed,AB66
+Anodonta anatina,AA,17,Rotsee,ROT,LU,Reuss,334692_39-AB67_S191,passed,AB67
+Anodonta anatina,AA,17,Rotsee,ROT,LU,Reuss,334692_40-AB68_S86,passed,AB68
+Anodonta cygnea,AC,17,Rotsee,ROT,LU,Reuss,334695_41-AB69_S128,passed,AB69
+Anodonta cygnea,AC,17,Rotsee,ROT,LU,Reuss,334695_42-AB70_S380,passed,AB70
+Anodonta anatina,AA,17,Rotsee,ROT,LU,Reuss,334692_41-AB71_S361,passed,AB71
+Anodonta anatina,AA,17,Rotsee,ROT,LU,Reuss,334692_42-AB72_S236,passed,AB72
+Anodonta cygnea,AC,17,Rotsee,ROT,LU,Reuss,334695_43-AB73_S134,passed,AB73
+Anodonta anatina,AA,17,Rotsee,ROT,LU,Reuss,334692_43-AB74_S275,passed,AB74
+Anodonta cygnea,AC,17,Rotsee,ROT,LU,Reuss,334695_44-AB75_S17,passed,AB75
+Anodonta cygnea,AC,17,Rotsee,ROT,LU,Reuss,334695_45-AB76_S340,passed,AB76
+Anodonta cygnea,AC,17,Rotsee,ROT,LU,Reuss,334695_46-AB77_S352,passed,AB77
+Anodonta cygnea,AC,17,Rotsee,ROT,LU,Reuss,334695_47-AB78_S110,passed,AB78
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,328261_13-AB80_S12,passed,AB80
+Anodonta cygnea,AC,6,Alter Rhein,ARH,SG,Rhein,334695_48-AB81_S7,passed,AB81
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,328261_14-AB82_S6,passed,AB82
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,328261_15-AB83_S20,passed,AB83
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,328261_16-AB84_S11,passed,AB84
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,328261_17-AB85_S23,passed,AB85
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,328261_18-AB86_S15,passed,AB86
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,328261_19-AB87_S14,passed,AB87
+Anodonta cygnea,AC,6,Alter Rhein,ARH,SG,Rhein,334695_49-AB88_S327,passed,AB88
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,328261_20-AB89_S2,passed,AB89
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,328261_21-AB90_S13,passed,AB90
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,328261_22-AB91_S22,passed,AB91
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,328261_23-AB92_S9,passed,AB92
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,334692_44-AB93_S167,passed,AB93
+Anodonta anatina,AA,6,Alter Rhein,ARH,SG,Rhein,328261_24-AB94_S21,passed,AB94
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334692_45-AB95_S302,passed,AB95
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334692_46-AB96_S205,passed,AB96
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334692_47-AB97_S55,passed,AB97
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334692_48-AB98_S357,passed,AB98
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334692_49-AB99_S104,passed,AB99
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334692_50-AC01_S212,passed,AC01
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334693_01-AC02_S312,passed,AC02
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334693_02-AC03_S383,passed,AC03
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334693_03-AC04_S72,passed,AC04
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334693_04-AC05_S311,passed,AC05
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334693_05-AC06_S127,passed,AC06
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334693_06-AC07_S12,passed,AC07
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334693_07-AC08_S276,passed,AC08
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334693_08-AC09_S201,passed,AC09
+Anodonta anatina,AA,23,Nottwil,NOT,LU,Aare,334693_09-AC10_S85,passed,AC10
+Anodonta cygnea,AC,14,Alte Reuss,ARE,AG,Reuss,334695_50-AC12_S285,passed,AC12
+Anodonta cygnea,AC,14,Alte Reuss,ARE,AG,Reuss,334697_01-AC13_S277,passed,AC13
+Anodonta cygnea,AC,14,Alte Reuss,ARE,AG,Reuss,334697_02-AC14_S197,passed,AC14
+Anodonta cygnea,AC,14,Alte Reuss,ARE,AG,Reuss,334697_03-AC15_S19,passed,AC15
+Anodonta anatina,AA,14,Alte Reuss,ARE,AG,Reuss,334693_10-AC16_S16,passed,AC16
+Anodonta anatina,AA,14,Alte Reuss,ARE,AG,Reuss,334693_11-AC17_S286,passed,AC17
+Anodonta cygnea,AC,14,Alte Reuss,ARE,AG,Reuss,334697_04-AC18_S291,passed,AC18
+Anodonta cygnea,AC,14,Alte Reuss,ARE,AG,Reuss,334697_05-AC19_S45,passed,AC19
+Anodonta anatina,AA,14,Alte Reuss,ARE,AG,Reuss,334693_12-AC20_S225,passed,AC20
+Anodonta anatina,AA,14,Alte Reuss,ARE,AG,Reuss,334693_13-AC21_S310,passed,AC21
+Anodonta anatina,AA,16,Seewen,SEE,SZ,Reuss,334693_14-AC23_S59,passed,AC23
+Anodonta anatina,AA,16,Seewen,SEE,SZ,Reuss,334693_15-AC24_S308,passed,AC24
+Anodonta cygnea,AC,16,Seewen,SEE,SZ,Reuss,334697_06-AC25_S172,passed,AC25
+Anodonta anatina,AA,16,Seewen,SEE,SZ,Reuss,334693_16-AC26_S43,passed,AC26
+Anodonta anatina,AA,16,Seewen,SEE,SZ,Reuss,334693_17-AC27_S162,passed,AC27
+Anodonta cygnea,AC,16,Seewen,SEE,SZ,Reuss,334697_07-AC28_S1,passed,AC28
+Anodonta anatina,AA,16,Seewen,SEE,SZ,Reuss,334693_18-AC29_S303,passed,AC29
+Anodonta anatina,AA,16,Seewen,SEE,SZ,Reuss,334693_19-AC30_S368,passed,AC30
+Anodonta anatina,AA,16,Seewen,SEE,SZ,Reuss,334693_20-AC31_S319,passed,AC31
+Anodonta cygnea,AC,16,Seewen,SEE,SZ,Reuss,334697_08-AC32_S217,passed,AC32
+Anodonta cygnea,AC,16,Seewen,SEE,SZ,Reuss,334697_09-AC33_S238,passed,AC33
+Anodonta cygnea,AC,16,Seewen,SEE,SZ,Reuss,334697_10-AC34_S208,passed,AC34
+Anodonta anatina,AA,16,Seewen,SEE,SZ,Reuss,334693_21-AC35_S341,passed,AC35
+Anodonta anatina,AA,16,Seewen,SEE,SZ,Reuss,334693_22-AC36_S159,passed,AC36
+Anodonta anatina,AA,16,Seewen,SEE,SZ,Reuss,334693_23-AC37_S46,passed,AC37
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334693_24-AC39_S347,passed,AC39
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334693_25-AC40_S93,passed,AC40
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334693_26-AC41_S348,passed,AC41
+Anodonta cygnea,AC,9,Wädenswil,WAD,ZH,Limmat,334697_11-AC42_S41,passed,AC42
+Anodonta cygnea,AC,25,St. Blaise,STB,NE,Aare,334697_12-AC43_S53,passed,AC43
+Anodonta cygnea,AC,25,St. Blaise,STB,NE,Aare,334697_13-AC44_S4,passed,AC44
+Anodonta cygnea,AC,25,St. Blaise,STB,NE,Aare,334697_14-AC45_S192,passed,AC45
+Anodonta cygnea,AC,25,St. Blaise,STB,NE,Aare,334697_15-AC46_S367,passed,AC46
+Anodonta anatina,AA,25,St. Blaise,STB,NE,Aare,334693_27-AC47_S76,passed,AC47
+Anodonta cygnea,AC,25,St. Blaise,STB,NE,Aare,334697_16-AC48_S66,passed,AC48
+Anodonta anatina,AA,25,St. Blaise,STB,NE,Aare,334693_28-AC49_S28,passed,AC49
+Anodonta cygnea,AC,25,St. Blaise,STB,NE,Aare,334697_17-AC50_S388,passed,AC50
+Anodonta cygnea,AC,25,St. Blaise,STB,NE,Aare,334697_18-AC51_S280,passed,AC51
+Anodonta cygnea,AC,25,St. Blaise,STB,NE,Aare,334697_19-AC52_S199,passed,AC52
+Anodonta cygnea,AC,25,St. Blaise,STB,NE,Aare,334697_20-AC53_S105,failed,AC53
+Anodonta cygnea,AC,25,St. Blaise,STB,NE,Aare,334697_21-AC54_S154,passed,AC54
+Anodonta anatina,AA,25,St. Blaise,STB,NE,Aare,334693_29-AC55_S391,passed,AC55
+Anodonta anatina,AA,25,St. Blaise,STB,NE,Aare,334693_30-AC56_S313,passed,AC56
+Anodonta cygnea,AC,25,St. Blaise,STB,NE,Aare,334697_22-AC57_S151,failed,AC57
+Anodonta cygnea,AC,8,Türlersee,TUR,ZH,Limmat,334698_49-AC61_S320,passed,AC61
+Anodonta cygnea,AC,8,Türlersee,TUR,ZH,Limmat,334698_50-AC62_S207,passed,AC62
+Anodonta cygnea,AC,8,Türlersee,TUR,ZH,Limmat,334697_23-AC63_S137,passed,AC63
+Anodonta cygnea,AC,8,Türlersee,TUR,ZH,Limmat,334697_24-AC64_S219,failed,AC64
+Anodonta anatina,AA,7,Greifensee,GRE,ZH,Rhein,334693_31-AC69_S309,passed,AC69
+Anodonta anatina,AA,30,Locarno,LOC,TI,Ticino,334693_32-AC71_S20,passed,AC71
+Anodonta anatina,AA,30,Locarno,LOC,TI,Ticino,334693_33-AC72_S400,passed,AC72
+Anodonta anatina,AA,30,Locarno,LOC,TI,Ticino,334693_34-AC73_S248,passed,AC73
+Anodonta anatina,AA,30,Locarno,LOC,TI,Ticino,334693_35-AC74_S81,failed,AC74
+Anodonta exulcerata,AE,30,Locarno,LOC,TI,Ticino,334696_06-AC75_S8,passed,AC75
+Anodonta anatina,AA,30,Locarno,LOC,TI,Ticino,334693_36-AC76_S290,passed,AC76
+Anodonta anatina,AA,30,Locarno,LOC,TI,Ticino,334693_37-AC77_S22,failed,AC77
+Anodonta anatina,AA,30,Locarno,LOC,TI,Ticino,334693_38-AC78_S90,passed,AC78
+Anodonta anatina,AA,30,Locarno,LOC,TI,Ticino,334693_39-AC79_S25,passed,AC79
+Anodonta anatina,AA,30,Locarno,LOC,TI,Ticino,334693_40-AC80_S265,passed,AC80
+Anodonta anatina,AA,30,Locarno,LOC,TI,Ticino,334693_41-AC81_S92,passed,AC81
+Anodonta cygnea,AC,31,Agno,AGN,TI,Ticino,334697_25-AC83_S324,passed,AC83
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_07-AC84_S316,passed,AC84
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_08-AC85_S149,passed,AC85
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_09-AC86_S298,passed,AC86
+Anodonta cygnea,AC,31,Agno,AGN,TI,Ticino,334697_26-AC87_S179,passed,AC87
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_10-AC88_S113,passed,AC88
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_11-AC89_S270,passed,AC89
+Anodonta cygnea,AC,31,Agno,AGN,TI,Ticino,334697_27-AC90_S331,passed,AC90
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_12-AC91_S153,passed,AC91
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_13-AC92_S355,passed,AC92
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_14-AC93_S11,passed,AC93
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_15-AC94_S395,passed,AC94
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_16-AC95_S209,passed,AC95
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_17-AC96_S119,passed,AC96
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_18-AC97_S229,passed,AC97
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_19-AC98_S243,passed,AC98
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_20-AC99_S382,passed,AC99
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_21-AD01_S49,passed,AD01
+Anodonta exulcerata,AE,31,Agno,AGN,TI,Ticino,334696_23-AD03_S240,passed,AD03
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334697_28-AE00_S329,passed,AE00
+Anodonta cygnea,AC,1,Nussbaumersee,NUS,TG,Rhein,334697_29-AE15_S156,passed,AE15
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334693_42-AE16_S145,passed,AE16
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334693_43-AE17_S176,passed,AE17
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334693_44-AE18_S129,passed,AE18
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334693_45-AE19_S256,passed,AE19
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334693_46-AE20_S359,passed,AE20
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334693_47-AE21_S75,passed,AE21
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334693_48-AE22_S330,passed,AE22
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334693_49-AE23_S62,passed,AE23
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334693_50-AE24_S21,passed,AE24
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_01-AE25_S102,passed,AE25
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_02-AE26_S182,passed,AE26
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_03-AE27_S9,passed,AE27
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_04-AE28_S255,passed,AE28
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_05-AE29_S251,passed,AE29
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_06-AE30_S185,passed,AE30
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_07-AE31_S336,passed,AE31
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_08-AE32_S263,passed,AE32
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_09-AE33_S133,passed,AE33
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_10-AE34_S294,passed,AE34
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_11-AE35_S51,passed,AE35
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_12-AE36_S396,passed,AE36
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_13-AE37_S126,passed,AE37
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_14-AE38_S374,passed,AE38
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_15-AE39_S109,passed,AE39
+Anodonta anatina,AA,2,Vagoweiher,VAG,TG,Rhein,334694_16-AE40_S224,passed,AE40
+Anodonta cygnea,AC,4,Eichweiher,EIC,SG,Rhein,334697_30-AE41_S292,passed,AE41
+Anodonta anatina,AA,4,Eichweiher,EIC,SG,Rhein,334694_17-AE42_S354,passed,AE42
+Anodonta anatina,AA,4,Eichweiher,EIC,SG,Rhein,334694_18-AE43_S33,passed,AE43
+Anodonta cygnea,AC,4,Eichweiher,EIC,SG,Rhein,334697_31-AE44_S221,passed,AE44
+Anodonta anatina,AA,4,Eichweiher,EIC,SG,Rhein,334694_19-AE45_S178,passed,AE45
+Anodonta anatina,AA,4,Eichweiher,EIC,SG,Rhein,334694_20-AE46_S358,passed,AE46
+Anodonta cygnea,AC,4,Eichweiher,EIC,SG,Rhein,334697_32-AE47_S116,passed,AE47
+Anodonta anatina,AA,4,Eichweiher,EIC,SG,Rhein,334694_21-AE48_S387,passed,AE48
+Anodonta cygnea,AC,4,Eichweiher,EIC,SG,Rhein,334697_33-AE49_S69,passed,AE49
+Anodonta cygnea,AC,4,Eichweiher,EIC,SG,Rhein,334697_34-AE50_S237,passed,AE50
+Anodonta cygnea,AC,4,Eichweiher,EIC,SG,Rhein,334697_35-AE51_S202,passed,AE51
+Anodonta cygnea,AC,4,Eichweiher,EIC,SG,Rhein,334697_36-AE52_S135,passed,AE52
+Anodonta cygnea,AC,4,Eichweiher,EIC,SG,Rhein,334697_37-AE53_S117,passed,AE53
+Anodonta anatina,AA,4,Eichweiher,EIC,SG,Rhein,334694_22-AE54_S48,passed,AE54
+Anodonta anatina,AA,4,Eichweiher,EIC,SG,Rhein,334694_23-AE55_S91,passed,AE55
+Anodonta anatina,AA,4,Eichweiher,EIC,SG,Rhein,334694_24-AE56_S356,passed,AE56
+Anodonta anatina,AA,3,Rütiweiher,RUT,TG,Rhein,334694_25-AE57_S366,passed,AE57
+Anodonta cygnea,AC,3,Rütiweiher,RUT,TG,Rhein,334697_38-AE58_S300,passed,AE58
+Anodonta cygnea,AC,3,Rütiweiher,RUT,TG,Rhein,334697_39-AE59_S344,failed,AE59
+Anodonta cygnea,AC,3,Rütiweiher,RUT,TG,Rhein,334697_40-AE60_S120,passed,AE60
+Anodonta cygnea,AC,3,Rütiweiher,RUT,TG,Rhein,334697_41-AE61_S125,passed,AE61
+Anodonta anatina,AA,3,Rütiweiher,RUT,TG,Rhein,334694_26-AE62_S198,passed,AE62
+Anodonta cygnea,AC,3,Rütiweiher,RUT,TG,Rhein,334697_42-AE63_S249,passed,AE63
+Anodonta cygnea,AC,3,Rütiweiher,RUT,TG,Rhein,334697_43-AE64_S353,passed,AE64
+Anodonta cygnea,AC,3,Rütiweiher,RUT,TG,Rhein,334697_44-AE65_S373,passed,AE65
+Anodonta cygnea,AC,3,Rütiweiher,RUT,TG,Rhein,334697_45-AE66_S132,passed,AE66
+Anodonta cygnea,AC,3,Rütiweiher,RUT,TG,Rhein,334697_46-AE67_S196,passed,AE67
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334697_47-AE68_S111,passed,AE68
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334697_48-AE69_S234,passed,AE69
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334697_49-AE70_S264,passed,AE70
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334697_50-AE71_S52,passed,AE71
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_01-AE72_S235,passed,AE72
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_02-AE73_S39,passed,AE73
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_03-AE74_S67,passed,AE74
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_04-AE75_S259,passed,AE75
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_05-AE76_S29,passed,AE76
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_06-AE77_S136,failed,AE77
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_07-AE78_S342,passed,AE78
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_08-AE79_S250,passed,AE79
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_09-AE80_S245,passed,AE80
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_10-AE81_S89,passed,AE81
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_11-AE82_S314,passed,AE82
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_12-AE83_S346,failed,AE83
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_13-AE84_S100,passed,AE84
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_14-AE85_S322,passed,AE85
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_15-AE86_S108,passed,AE86
+Anodonta cygnea,AC,18,Ufschötti,UFS,LU,Reuss,334698_16-AE87_S73,passed,AE87
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_17-AE88_S318,passed,AE88
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_18-AE89_S31,passed,AE89
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_19-AE90_S257,passed,AE90
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_20-AE91_S168,passed,AE91
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_21-AE92_S143,passed,AE92
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_22-AE93_S155,failed,AE93
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_23-AE94_S385,passed,AE94
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_24-AE95_S83,passed,AE95
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_25-AE96_S241,failed,AE96
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_26-AE97_S339,passed,AE97
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_27-AE98_S195,passed,AE98
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_28-AE99_S188,failed,AE99
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_29-AF01_S114,failed,AF01
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_30-AF02_S230,failed,AF02
+Anodonta cygnea,AC,29,Etang du Rosel,ETR,VS,Rhone,334698_31-AF03_S384,passed,AF03
+Anodonta cygnea,AC,28,Etang du Duzillet,ETD,VS,Rhone,334698_32-AF04_S287,failed,AF04
+Anodonta cygnea,AC,28,Etang du Duzillet,ETD,VS,Rhone,334698_33-AF05_S268,passed,AF05
+Anodonta cygnea,AC,28,Etang du Duzillet,ETD,VS,Rhone,334698_34-AF06_S187,passed,AF06
+Anodonta cygnea,AC,28,Etang du Duzillet,ETD,VS,Rhone,334698_35-AF07_S160,passed,AF07
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_27-AF08_S397,passed,AF08
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_28-AF09_S152,passed,AF09
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_29-AF10_S288,passed,AF10
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_30-AF11_S364,passed,AF11
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_31-AF12_S142,passed,AF12
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_32-AF13_S99,passed,AF13
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_33-AF14_S325,passed,AF14
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_34-AF15_S274,passed,AF15
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_35-AF16_S79,passed,AF16
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_36-AF17_S150,passed,AF17
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_37-AF18_S118,passed,AF18
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_38-AF19_S239,passed,AF19
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_39-AF20_S106,passed,AF20
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_40-AF21_S147,passed,AF21
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_41-AF22_S328,passed,AF22
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_42-AF23_S244,passed,AF23
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_43-AF24_S88,failed,AF24
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_44-AF25_S171,passed,AF25
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_45-AF26_S377,passed,AF26
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_46-AF27_S258,passed,AF27
+Anodonta anatina,AA,27,Lac de Bret,BRE,VD,Rhone,334694_47-AF28_S97,passed,AF28
+Anodonta cygnea,AC,28,Etang du Duzillet,ETD,VS,Rhone,334698_36-AF29_S65,passed,AF29
+Anodonta cygnea,AC,28,Etang du Duzillet,ETD,VS,Rhone,334698_37-AF30_S345,passed,AF30
+Anodonta cygnea,AC,28,Etang du Duzillet,ETD,VS,Rhone,334698_38-AF31_S252,failed,AF31
+Anodonta cygnea,AC,28,Etang du Duzillet,ETD,VS,Rhone,334698_39-AF32_S170,passed,AF32
+Anodonta cygnea,AC,28,Etang du Duzillet,ETD,VS,Rhone,334698_40-AF33_S378,passed,AF33
+Anodonta cygnea,AC,28,Etang du Duzillet,ETD,VS,Rhone,334698_41-AF34_S321,passed,AF34
+Anodonta cygnea,AC,28,Etang du Duzillet,ETD,VS,Rhone,334698_42-AF35_S337,passed,AF35
+Anodonta cygnea,AC,28,Etang du Duzillet,ETD,VS,Rhone,334698_43-AF36_S140,passed,AF36
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334694_48-AF37_S13,passed,AF37
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334694_49-AF38_S180,passed,AF38
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334694_50-AF39_S148,passed,AF39
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334695_01-AF40_S82,failed,AF40
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334695_02-AF41_S50,passed,AF41
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334695_03-AF42_S326,passed,AF42
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334695_04-AF43_S190,passed,AF43
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334695_05-AF44_S164,passed,AF44
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334695_06-AF45_S306,passed,AF45
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334695_07-AF46_S227,passed,AF46
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334695_08-AF47_S393,passed,AF47
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334695_09-AF48_S278,passed,AF48
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334695_10-AF49_S63,passed,AF49
+Anodonta cygnea,AC,13,Walenstadt,WAL,SG,Limmat,334698_44-AF50_S34,passed,AF50
+Anodonta anatina,AA,13,Walenstadt,WAL,SG,Limmat,334695_11-AF51_S144,passed,AF51
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334695_12-AF52_S204,passed,AF52
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334695_13-AF53_S138,passed,AF53
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334695_14-AF54_S57,passed,AF54
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334695_15-AF55_S70,passed,AF55
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334695_16-AF56_S71,failed,AF56
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334695_17-AF57_S193,passed,AF57
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334695_18-AF58_S169,passed,AF58
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334695_19-AF59_S121,passed,AF59
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334695_20-AF60_S61,passed,AF60
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334695_21-AF61_S173,passed,AF61
+Anodonta anatina,AA,12,Walensee Gäsi,WAG,GL,Limmat,334695_22-AF62_S3,passed,AF62
+Anodonta cygnea,AC,7,Greifensee,GRE,ZH,Rhein,334698_45-AF63_S175,passed,AF63
+Anodonta cygnea,AC,7,Greifensee,GRE,ZH,Rhein,334698_46-AF64_S60,passed,AF64
+Anodonta anatina,AA,7,Greifensee,GRE,ZH,Rhein,334695_23-AF65_S282,passed,AF65
+Anodonta anatina,AA,7,Greifensee,GRE,ZH,Rhein,334695_24-AF66_S23,failed,AF66
+Anodonta cygnea,AC,7,Greifensee,GRE,ZH,Rhein,334698_47-AF67_S161,passed,AF67
+Anodonta anatina,AA,7,Greifensee,GRE,ZH,Rhein,334695_25-AF68_S369,passed,AF68
+Anodonta cygnea,AC,7,Greifensee,GRE,ZH,Rhein,334698_48-AF69_S115,passed,AF69
+Anodonta anatina,AA,7,Greifensee,GRE,ZH,Rhein,334696_01-AF70_S96,passed,AF70
+Anodonta anatina,AA,7,Greifensee,GRE,ZH,Rhein,334696_02-AF71_S253,passed,AF71
+Anodonta anatina,AA,7,Greifensee,GRE,ZH,Rhein,334696_03-AF72_S279,passed,AF72
