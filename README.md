@@ -28,11 +28,12 @@ cd anodonta
 
 If you use this code in your research, please cite the associated study:
 
-> [Full citation of your study, including DOI if available]
+Add cictation and DOI when available
 
 ## Contact
 
 For questions or collaboration opportunities, please contact:
 
-**[Ellika Faust]**  
+**Ellika Faust**
+ellika.faust[at]gmail.com
 
